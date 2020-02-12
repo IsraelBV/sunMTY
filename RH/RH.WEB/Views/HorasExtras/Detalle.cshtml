@@ -1,0 +1,158 @@
+﻿@using RH.Entidades
+@using RH.BLL
+@using Common.Enums
+@using Common.Helpers
+@model List<HorasExtrasEmpleado>
+@{
+    ViewBag.Title = "Detalle de Horas Extras";
+    Layout = "~/Views/Shared/_MenuSecundario.cshtml";
+    Empleado empleado = ViewBag.Empleado;    
+    var IdUsuario = SessionHelpers.GetIdUsuario();
+}
+
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/t/bs/dt-1.10.11,r-2.0.2/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/PanelWithTabs2.css" />
+
+<div class="panel with-nav-tabs panel-primary" id="panelEmpleados">
+    <div class="panel-heading clearfix text-center">
+        <div class="pull-left">
+            <h4 class="panel-title">Horas Extras de @empleado.APaterno @empleado.AMaterno  @empleado.Nombres</h4>
+        </div>
+        <div class="pull-right">
+            <ul class="nav nav-tabs">
+                <li>
+                    <a class="btn btn-danger cancel hovercancelado" href="/HorasExtras/Index">
+                        <i class="fa fa-undo"></i> Regresar
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <button type="button" class="btn col-lg-12 hovernuevo" data-toggle="collapse" data-target="#dvrh">Horas Extras registradas por RH</button>
+            <div id="dvrh" class="collapse in well">
+                <hr />
+                <table class="table table-hover col-md-12" id="tblDetalle">
+                    <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th class="tr-tab">Hora</th>
+                        <th>Tipo Simple</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr data-idhoras="@item.IdHoras" >
+                            <td>@item.Fecha.ToString("dd MMMM yyyy")</td>
+                            <td>@item.Horas</td>
+                            <td>@(item.Simples ? "si" :"no")</td>
+                            <td class="text-right">
+                                @if (SYA.BLL.ControlAcceso.ValidarEjecutarAccion(Modulos.RHInasistencias, AccionCrud.Eliminar, IdUsuario))
+                                {
+                                        @*<button class="btn btn-danger btn-table btnDelete hovercancelado">Eliminar</button>*@
+                                    <button class="label label-primary btnDelete hovercancelado"
+                                            data-toggle="confirmation"
+                                            data-title="¿Realmente quieres eliminar la Hora Extra?"
+                                            data-placement="bottom"
+                                            data-singleton="true"
+                                            data-popout="true"
+                                            data-btn-ok-label="Sí"
+                                            data-btn-ok-class="hovernuevo"
+                                            data-btn-cancel-label="No"
+                                            data-btn-cancel-class="hovercancelado">
+                                        Eliminar 
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <button type="button" class="btn hoversecundario col-md-12" data-toggle="collapse" data-target="#dvNom">HEN</button>
+            <div id="dvNom" class="collapse well">
+                <hr />
+            </div>
+        </div>
+    </div>
+</div>
+    
+<script type="text/javascript" src="https://cdn.datatables.net/t/bs/dt-1.10.11,r-2.0.2/datatables.min.js"></script>
+<script type="text/javascript" src="~/scripts/bootstrap-notify.min.js"></script>
+
+<script>
+        $(document).ready(function () {
+            $("#tblDetalle").DataTable({
+                paging: false,
+                bInfo: false,
+                "searching": false,
+                scrollY: "250px",
+                order: [[1, "desc"]]
+
+            });
+
+         
+
+            $(document).on('shown.bs.tab', 'a[data-toggle="tab"]', function (e) {
+                $(".tr-tab").click();
+                $(".tr-tab").click();
+            });
+
+            //Permite usar las confirmaciones de bootstrap
+            $('[data-toggle=confirmation]').confirmation({
+                rootSelector: '[data-toggle=confirmation]',
+
+                onConfirm: function () {
+                    var $row = $(this).parent().parent();
+                    var idHoras = $row.data("idhoras");
+                            $.ajax({
+                                url: "/HorasExtras/DeleteHe",
+                                method: "POST",
+                                data: {
+                                    id: idHoras
+                                }
+                            }).done(function (data) {
+                                if (data) {
+                                    $row.hide();
+                                    $.notify({
+                                        title: "<b>¡Éxito!</b>",
+                                        message: "Se ha eliminado la Hora Extra",
+                                    }, {
+                                        type: "success",
+                                        animate: {
+                                            enter: 'animated fadeInDown',
+                                            exit: 'animated fadeOutUp'
+                                        },
+                                        placement: { from: 'top', align: 'center' },
+                                        offset: 55, timer: 5000
+                                    });
+                                }
+                                else {
+                                    $.notify({
+                                        title: "<b>¡Error!</b>",
+                                        message: "Ha ocurrido un error inesperado. Por favor intenta de nuevo.",
+                                    }, {
+                                        type: "error",
+                                        animate: {
+                                            enter: 'animated fadeInDown',
+                                            exit: 'animated fadeOutUp'
+                                        },
+                                        placement: { from: 'top', align: 'center' },
+                                        offset: 55, timer: 5000
+                                    });
+                                }
+                            });
+                    }
+            });
+
+
+           
+        });
+</script>

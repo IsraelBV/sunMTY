@@ -1,0 +1,368 @@
+﻿@using Common.Utils;
+@using RH.Entidades
+
+@model List<Nomina.BLL.PrimaVacacionalModelo>
+@{
+    string idInput = "";
+    string xpor = "";
+    string xsd = "";
+    string xgrav = "";
+    string xexe = "";
+    string xtotal = "";
+    string xisn = "";
+
+    string btnG = "";
+    string btnE = "";
+}
+
+@*<script src="~/Scripts/locales/es.js"></script>*@
+
+<style>
+  
+    .inputHide {
+        display: none;    
+    }
+
+    .inputShow {
+        display: block;
+    }
+
+    .diasClass {
+        background-color:aliceblue!important;
+        border:1px solid #151515!important;
+    }
+
+</style>
+
+<div class="main-content-title">
+    <h4>Prima vacacional - adelantada - o sin tener vacaciones activas - SM Actual: @ViewBag.SmValor</h4>
+</div>
+<div class="main-content-body">
+
+    <div class="col-md-12">
+        <table id="tblPrimaVacacional" class="" width="100%">
+            <thead>
+                <tr class="info">
+                    <th>IdE</th>
+                    <th>Nombre</th>
+                    <th>Dias</th>
+                    <th>%</th>
+                    <th>SD</th>
+                    <th>Gravado</th>
+                    <th>Exento</th>
+                    <th>Total</th>
+                    <th>Isn @(ViewBag.IsnValor*100)%</th>
+                    <th>Accion</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    idInput = $"fx{item.IdE}";
+                    xpor = $"xport{item.IdE}";
+                    xsd = $"xsd{item.IdE}";
+                    xgrav = $"xgrav{item.IdE}";
+                    xexe = $"xexe{item.IdE}";
+                    xtotal = $"xtotal{item.IdE}";
+                    xisn = $"xisn{item.IdE}";
+
+                    btnG = $"btnG{item.IdE}";
+                    btnE = $"btnE{item.IdE}";
+
+                    <tr data-idempleado="@item.IdE" data-idprima="@item.IdP">
+                        <td title="Id del empleado">@item.IdE</td>
+                        <td>@item.NombreEmpleado </td>
+                        <td>
+                            <input id="@idInput" type="text" value="@item.Dias" class="diasClass" placeholder="presiona enter para calcular" title="presiona enter para calcular"/>
+                            
+                        </td>
+                        <td><span id="@xpor">@item.Porcentaje</span></td>
+                        <td><span id="@xsd">@item.Sd</span></td>
+                        <td><span id="@xgrav">@item.Gravado</span></td>
+                        <td><span id="@xexe">@item.Exento</span></td>
+                        <th><span id="@xtotal">@item.Total</span></th>
+                        <td><span id="@xisn">@item.Isn</span></td>
+                        <td>
+                                @*<input type="button" id="@btnE" value="Eliminar" class="btn btn-primary @(item.Guardado ? "inputShow" : "inputHide")" onclick="fnEliminar(this)" />*@
+                            @*<input type="button" id="@btnG" value="Guardar" class="btn btn-danger @(item.Guardado ?  "inputHide" : "inputShow")" onclick="fnGuardar(this)" />*@
+                            
+                            <button id="@btnE" class="btn btn-danger @(item.Guardado ? "inputShow" : "inputHide")" onclick="fnEliminar(this)" title="Eliminar datos de prima">Eliminar</button>
+                            <button id="@btnG" class="btn btn-primary @(item.Guardado ? "inputHide" : "inputShow")" onclick="fnGuardar(this)" title="Guardar datos de prima vacacional">Guardar</button>
+
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    
+
+    <input type="hidden" id="hdsm" value="@ViewBag.SmValor" />
+    <input type="hidden" id="hdisn" value="@ViewBag.IsnValor"/>
+
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+  
+    var table = $("#tblPrimaVacacional").DataTable({
+
+            dom: 'Bfrtip',
+            scrollY: '70vh',
+            scrollX: true,
+            scrollCollapse: true,
+            paging: false,
+            searching: true,
+            "language": { "url": "../scripts/datatables-spanish.json" },
+            info: true,
+            select: false,//{ style: 'multi' }
+            "buttons": [
+            {
+                className: '-',
+                text: '-',
+                action: function () {  },
+                key: { key: 'a' }
+            }
+            ]
+
+
+        });
+
+
+        //KeyUp
+    $(".diasClass").keyup(function (e) {
+
+        //Enter
+        if (e.which === 13 ) {
+
+            var dias = $(this).val();
+
+            var ide = $(this).closest("tr").data("idempleado");//idempleado
+            var spanPor = "#xport" + ide;
+            var spanSd = "#xsd" + ide;
+            var spanGrav = "#xgrav" + ide;
+            var spanExe = "#xexe" + ide;
+            var spanTotal = "#xtotal" + ide;
+            var spanIsn = "#xisn" + ide;
+
+            var por = $(spanPor).text();
+            var sd = $(spanSd).text();
+
+
+            var smx = $("#hdsm").val();
+            var isnx = $("#hdisn").val();
+            
+            //calculamos el total
+            //var totalCalculo = (sd * (por/100)) * dias;
+            //alert(totalCalculo);
+            ////gravado
+            //var topePrima = 80.36 * 15;
+            //var PrimaVacacionalExcento = 0;
+            //var PrimaVacacionaGravado = 0;
+            //PrimaVacacionalExcento = totalCalculo <= topePrima ? totalCalculo : topePrima;
+            //PrimaVacacionaGravado = totalCalculo - PrimaVacacionalExcento;
+            ////exento
+            
+            ////isn
+            //var isntotal = totalCalculo * .03;
+            
+            ////set valor 
+            //$(spanTotal).text(totalCalculo);
+            //$(spanGrav).text(PrimaVacacionaGravado);
+            //$(spanExe).text(PrimaVacacionalExcento);
+            //$(spanIsn).text(isntotal);
+
+
+            if (sd > 0) {
+                //ajax
+                //>>
+
+                $.ajax({
+                    url: "/PrimaVacacional/CalcularPrima",
+                    method: "POST",
+                    data: {
+                        dias: dias,
+                        porcentaje: por,
+                        sd: sd,
+                        smg: smx,
+                        xisn: isnx
+                    },
+                    beforeSend: function() {}
+                }).done(function(data) {
+
+                    var obj = $.parseJSON(data);
+
+                    ////set valor 
+                    $(spanTotal).text(obj['Item1']);
+                    $(spanGrav).text(obj['Item2']);
+                    $(spanExe).text(obj['Item3']);
+                    $(spanIsn).text(obj['Item4']);
+
+                });
+
+                //<<
+            } else {
+                alert('El SD debe ser mayor a cero.');
+            }
+
+        } 
+
+
+    }); //--> fin funcion faltas personalizadas dacClss
+
+
+    });
+
+    //funcion del calculo
+    function fnCalculo(d,pp,sal, sm, xnom)
+    {
+        //>>
+
+        $.ajax({
+            url: "/PrimaVacacional/CalcularPrima",
+            method: "POST",
+            data: {
+                dias:d,
+                porcentaje:pp,
+                sd:sal,
+                smg:sm,
+                xisn:xnom
+            },
+            beforeSend: function () { }
+        }).done(function (data) {
+
+            $.each(data, function (index, v) {
+                //actualizar spam
+                //var nespan = "#ne" + v.IdPeriodo;
+                //var nnspan = "#nn" + v.IdPeriodo;
+                //var ntspan = "#nt" + v.IdPeriodo;
+
+            });
+
+
+
+        });
+
+        //<<
+    }
+    
+    function fnGuardar(e) {
+        
+      //  var dias = $(e).val();
+        var ide = $(e).closest("tr").data("idempleado");//idempleado
+        
+        var inputdias = "#fx" + ide;
+        var spanPor = "#xport" + ide;
+        var spanSd = "#xsd" + ide;
+        var spanGrav = "#xgrav" + ide;
+        var spanExe = "#xexe" + ide;
+        var spanTotal = "#xtotal" + ide;
+        var spanIsn = "#xisn" + ide;
+
+        var dias = $(inputdias).val();
+        var por = $(spanPor).text();
+        var sd = $(spanSd).text();
+        var grav = $(spanGrav).text();
+        var ex = $(spanExe).text();
+        var total = $(spanTotal).text();
+        var isn = $(spanIsn).text();
+
+    
+        
+        if (total > 0) {
+
+            //>>
+            $.ajax({
+                url: "/PrimaVacacional/GuardarPrimaVacacional",
+                method: "POST",
+                data: {
+                    idE: ide,
+                    dias: dias,
+                    porcentaje: por,
+                    sd: sd,
+                    gravado: grav,
+                    exento: ex,
+                    total: total,
+                    isn: isn
+                },
+                beforeSend: function() {}
+            }).done(function(data) {
+
+                //console.log(data.resultado);
+                //console.log(data['resultado']);
+
+                if (data['resultado'] > 0) {
+                    alert('Se guardo correctamente');
+
+                    $("#btnG" + ide).removeClass('inputShow').addClass('inputHide');
+                    $("#btnE" + ide).removeClass('inputHide').addClass('inputShow');
+
+                    $(e).closest("tr").data("idprima", data.resultado);
+
+
+                } else {
+                    alert('No se guardaron los datos.');
+
+                }
+
+            });
+
+            //<<
+        } else {
+            alert('No se guardo. Total debe ser mayor a cero');
+            $(inputdias).focus();
+        }
+
+
+
+
+    }
+
+    function fnEliminar(e) {
+
+        var idp = $(e).closest("tr").data("idprima");//idempleado
+        var ide = $(e).closest("tr").data("idempleado");//idempleado
+        
+        //>>
+        $.ajax({
+            url: "/PrimaVacacional/EliminarPrimaVacacional",
+            method: "POST",
+            data: {
+                idPrima: idp
+            },
+            beforeSend: function () { }
+        }).done(function (data) {
+            
+            if (data['resultado']) {
+
+                $("#btnG" + ide).removeClass('inputHide').addClass('inputShow');
+                $("#btnE" + ide).removeClass('inputShow').addClass('inputHide');
+                
+                var spanGrav = "#xgrav" + ide;
+                var spanExe = "#xexe" + ide;
+                var spanTotal = "#xtotal" + ide;
+                var spanIsn = "#xisn" + ide;
+                var inputDias = "#fx" + ide;
+
+                $(spanTotal).text('0');
+                $(spanGrav).text('0');
+                $(spanExe).text('0');
+                $(spanIsn).text('0');
+                $(inputDias).val(0);
+                
+            } else {
+                alert('No se elimino el registro.');
+
+            }
+
+        });
+
+        //<<
+
+
+
+    }
+
+</script>

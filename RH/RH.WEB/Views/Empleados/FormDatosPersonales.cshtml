@@ -1,0 +1,263 @@
+﻿@model RH.Entidades.Empleado
+@using (Ajax.BeginForm("CrearEmpleado", "Empleados", new AjaxOptions { OnBegin = "OnBegin", OnSuccess = "section1_to_section2", OnFailure = "OnFailure" }, new { @class = "form-horizontal tooltipForm", id = "form-empleado" }))
+{
+    <!-- Columna Izquierda -->
+    <div class="col-md-12">
+        <div class="form-group">
+            @*<h6 class="col-md-12">Los campos marcados con (<span style="color:red;">*</span>) son requeridos.</h6>*@
+
+        </div>
+    </div>
+    <div class="col-md-6 col-xs-12">
+        
+        <div class="form-group">
+            <label for="nombre" class="col-sm-4"><span style="color: #ff0000">*</span> Nombre/s</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" style="text-transform: uppercase" name="Nombres" value="@(Model != null ? Model.Nombres : "")"
+                       data-rule-required="true"
+                       data-rule-maxlength="50"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="paterno" class="col-sm-4"><span style="color: #ff0000">*</span> Apellido Paterno</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" style="text-transform: uppercase" name="APaterno" value="@(Model != null ? Model.APaterno : "")"
+                       data-rule-required="true"
+                       data-rule-maxlength="50"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="materno" class="col-sm-4"><span style="color: #ff0000">*</span> Apellido Materno</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" style="text-transform: uppercase" name="AMaterno" value="@(Model != null ? Model.AMaterno : "")"
+                       data-rule-required="true"
+                       data-rule-maxlength="50"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="fecha_nacimiento" class="col-sm-4"><span style="color: #ff0000">*</span> Fecha de Nacimiento</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="date" class="form-control" name="FechaNacimiento" value="@(Model != null ? Model.FechaNacimiento.ToString("yyyy-MM-dd") : "")"
+                       data-rule-required="true"
+                       data-rule-date="true"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="rfc" class="col-sm-4"><span style="color: #ff0000">*</span> RFC</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" placeholder="ej. ASD123456R65" style="text-transform: uppercase" id="RFC" name="RFC" value="@(Model != null ? Model.RFC : "")"
+                       data-rule-required="true"
+                       @*data-rule-RFC="true"
+                       data-msg-RFC="¡Por favor ingresa un RFC válido!"*@/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="curp" class="col-sm-4"><span style="color: #ff0000">*</span> CURP</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" style="text-transform: uppercase" name="CURP" id="CURP" placeholder="ej. LELY850213MHCRLL56" value="@(Model != null ? Model.CURP : "")"
+                       data-rule-required="true"
+                       @*data-rule-CURP="true"*@
+                       @*data-msg-CURP="¡Por favor ingresa una CURP válida!"*@/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="nss" class="col-sm-4">NSS</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" name="NSS" id="NSS" value="@(Model != null ? Model.NSS : "")"
+                       data-rule-digits="true"
+                       data-rule-maxlength="11"
+                       data-rule-minlength="11"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="FONACOT" class="col-sm-4">FONACOT</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" name="FONACOT" value="@(Model != null ? Model.FONACOT : "")"
+                       data-rule-digits="true"
+                       data-rule-maxlength="20"
+                       data-rule-minlength="1"/>
+            </div>
+        </div>
+    </div>
+    <!-- /Columna Izquierda -->
+
+    <!-- Columna derecha -->
+    <div class="col-md-6 col-xs-12">
+    
+        <div class="form-group">
+            <label for="direccion" class="col-sm-4"><span style="color:#ff0000">*</span> Dirección</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" style="text-transform:uppercase" name="Direccion" value="@(Model != null ? Model.Direccion : "")"
+                       placeholder="SM/REG MZ LT #Ext/Depa CALLE COLONIA"
+                       data-rule-required="true"
+                       data-rule-maxlength="150" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="nacionalidad" class="col-sm-4"><span style="color:#ff0000">*</span> Nacionalidad</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" name="Nacionalidad" style="text-transform:uppercase" class="form-control" value="@(Model != null ? Model.Nacionalidad : "")"
+                       data-rule-required="true"
+                       data-rule-maxlength="50" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="estado" class="col-sm-4"><span style="color:#ff0000">*</span> Estado</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" name="Estado" class="form-control" style="text-transform:uppercase" value="@(Model != null ? Model.Estado : "")"
+                       data-rule-required="true"
+                       data-rule-maxlength="50" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="telefono" class="col-sm-4">Teléfono</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" name="Telefono" value="@(Model != null ? Model.Telefono : "")"
+                       data-rule-digits="true"
+                       data-rule-maxlength="10"
+                       data-rule-minlength="10" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="celular" class="col-sm-4">Celular</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="text" class="form-control" name="Celular" value="@(Model != null ? Model.Celular : "")"
+                       data-rule-digits="true"
+                       data-rule-maxlength="10"
+                       data-rule-minlength="10" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email" class="col-sm-4">Correo</label>
+            <div class="col-sm-8 input-group-sm">
+                <input type="email" class="form-control" style="text-transform:uppercase" name="Email" value="@(Model != null ? Model.Email : "")"
+                       data-rule-email="true"
+                       data-rule-maxlength="50" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="Sexo" class="col-md-4"><span style="color:#ff0000">*</span> Sexo</label>
+            <div class="col-md-8 input-group-sm">
+                <label class="radio-inline"><input type="radio" value="H" name="Sexo"   @(Model != null ? (Model.Sexo.Trim() == "H" ? "checked" : ""  ) : "checked" )  /> Masculino</label>
+                <label class="radio-inline"><input type="radio" value="M" name="Sexo" @(Model != null ? (Model.Sexo.Trim() == "M" ? "checked" : ""  ) : "" )  /> Femenino</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="EstadoCivil" class="col-md-4"><span style="color:#ff0000">*</span> Estado Civil</label>
+            <div class="col-md-8">
+                <label class="radio-inline">
+                    <input type="radio" value="Soltero/a" name="EstadoCivil" @(Model != null ? (Model.EstadoCivil.Trim() == "Soltero/a" ? "checked" : ""  ) : "checked" )  /> Soltero/a
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="Casado/a" name="EstadoCivil"  @(Model != null ? (Model.EstadoCivil.Trim() == "Casado/a" ? "checked" : ""  ) : "" )  /> Casado/a
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="Divorciado/a" name="EstadoCivil" @(Model != null ? (Model.EstadoCivil.Trim() == "Divorciado/a" ? "checked" : ""  ) : "" ) /> Divorciado/a
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="Viudo/a" name="EstadoCivil" @(Model != null ? (Model.EstadoCivil.Trim() == "Viudo/a" ? "checked" : ""  ) : "" )/> Viudo/a
+                </label>
+                <label class="radio-inline">
+                    <input type="radio" value="UnionLibre" name="EstadoCivil" @(Model != null ? (Model.EstadoCivil.Trim() == "UnionLibre" ? "checked" : ""  ) : "" ) /> Union Libre
+                </label>
+            </div>
+        </div>
+    </div>
+    <!-- /Columna Derecha -->
+    
+    <div class="col-md-12">
+        <div class="form-group">
+            <h5 id="valrfc" style="color: red">...</h5>
+            <h5 id="valcurp" style="color: red">...</h5>
+            <h5 id="valnss" style="color: red">...</h5>
+        </div>
+    </div>
+
+    <!-- Campos Ocultos -->
+    <input type="hidden" name="IdEmpleado" class="IdEmpleado" value="@(Model != null ? Model.IdEmpleado: 0)"/>
+    <input type="hidden" name="IdSucursal" id="IdSucursal" value="@ViewBag.Sucursal" />
+    <input type="hidden" name="Status" id="Status" value="true" />
+}
+
+<script>
+    $('#RFC').focusout(function() {
+
+        var texto = $('#RFC').val();
+        validadorExiste(texto,1);
+    });
+    //.focus(function () { alert('input focus'); })
+    //.blur(function () { alert('input blur'); });
+
+
+    $('#CURP').focusout(function() {
+        var texto = $('#CURP').val();
+        validadorExiste(texto, 2);
+
+    });
+
+    $('#NSS').focusout(function () {
+        var texto = $('#NSS').val();
+        validadorExiste(texto, 3);
+
+    });
+
+
+  //.blur(function () { alert('input blur'); });
+
+    function validadorExiste( cadena, opcion) {
+        
+
+        //Enviamos los datos por ajax
+        var request = $.ajax({
+            url: "/Empleados/ValidarSiExiste/",
+            method:"POST",
+            data: {
+                strCadena:cadena,
+                op:opcion
+            }
+        });
+
+        request.done(function(result) {
+         
+
+            if (opcion == 1) {
+                $('#valrfc').html(result.result);
+               
+            }
+            else if (opcion == 2) {
+                $('#valcurp').html(result.result);
+                
+            }
+            else if (opcion == 3) {
+                $('#valnss').html(result.result);
+               
+            }
+
+
+        });
+
+        request.fail(function (result) {
+           
+        });
+
+    }
+
+
+
+
+
+</script>

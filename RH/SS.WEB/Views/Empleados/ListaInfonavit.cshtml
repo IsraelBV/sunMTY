@@ -1,0 +1,81 @@
+﻿@model IEnumerable<RH.Entidades.Empleado_Infonavit>
+@using Common.Utils;
+@using Common.Enums;
+
+@if(Model.Where(x => x.Status == false).ToList().Count == Model.Count())
+{
+    <script>
+        //$("#panel-infonavit").show();
+    </script>
+}
+else
+{
+    <script>
+        //$("#panel-infonavit").show();
+    </script>
+}
+
+<style>
+  .TextColorInactive {
+      color: gray
+  }
+
+  .TextActive {
+      font-weight: bold;
+  }
+</style>
+
+<table class="table table-condensed table-striped">
+    <thead>
+    <tr>
+        <th>
+            # Crédito
+        </th>
+        <th>
+            Tipo
+        </th>
+        <th>
+            Factor Desc.
+        </th>
+        <th>
+           Estatus
+        </th>
+        <th></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        var TipoCredito = ((TipoCreditoInfonavit)item.TipoCredito).ToString().Replace('_', ' ');
+        //var FechaSuspension = Extensores.ToStringOrEmptyDate<DateTime>(item.FechaSuspension);
+        var strStatus = item.Status ? "Activo" : "--";
+        var strClassText = item.Status ? "TextActive" : "TextColorInactive";
+        <tr>
+            <td class="@strClassText">
+                @Html.DisplayFor(modelItem => item.NumCredito)
+            </td>
+            <td class="@strClassText">
+                @TipoCredito
+            </td>
+            <td class="@strClassText">
+                @Html.DisplayFor(modelItem => item.FactorDescuento)
+            </td>
+            <td class="@strClassText">
+                @strStatus
+            </td>
+            <td>
+                <button class="btn btn-primary btn-table btnDetalleInfonavit" data-id-infonavit="@item.Id"> 
+                    <span class="glyphicon glyphicon-info-sign"></span> 
+                </button>
+            </td>
+            <td>
+                <button class="btn btn-primary btn-table btnHistorialPagoInfonavit" data-id-infonavit="@item.Id">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+    

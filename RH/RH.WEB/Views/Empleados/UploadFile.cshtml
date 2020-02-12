@@ -1,0 +1,68 @@
+﻿@using System.Data;
+@model DataTable
+
+@if (Model != null)
+{
+    <h1 id="countRecords">@Model.Rows.Count</h1>
+
+    if (Model.Rows.Count > 0)
+    {
+        <table class="table" id="tblRecords" width="100%">
+            <thead>
+                <tr>                
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>Nombre/s</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Fecha de Alta</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(DataRow row in Model.Rows)
+                {
+                    var test = row["Fecha de Nacimiento"].ToString();
+                    var fechaNac = Convert.ToDateTime(row["Fecha de Nacimiento"].ToString());
+                    var fechaAlta = Convert.ToDateTime(@row["Fecha Alta"].ToString());
+                    <tr>                      
+                        <td>@row["Paterno"].ToString()</td>
+                        <td>@row["Materno"].ToString()</td>
+                        <td>@row["Nombres"].ToString()</td>
+                        <td>@fechaNac.ToString("dd/MM/yyyy")</td>
+                        <td>@fechaAlta.ToString("dd/MM/yyyy")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <script>
+            $(document).ready(function () {
+                $("#tblRecords").DataTable({
+                    "lengthMenu": [[10, 30, 50], [10, 30, 50]],
+                    "language": {
+                        "sInfoFiltered": "(filtrado de un total de _MAX_ Empleados)",
+                        "sInfo": "Del _START_ al _END_ de un total de _TOTAL_ empleados a importar",
+                        "sZeroRecords": "No se encontraron resultados",
+                        "infoEmpty": "No se encontraron registros",
+                        "sEmptyTable": "Ningún dato disponible en esta tabla",
+                        "sLoadingRecords": "Cargando...",
+                        "sSearch": "Buscar:",
+                    
+                        "oPaginate": {
+                            "sFirst": "Primero",
+                            "sLast": "Último",
+                            "sNext": "Siguiente",
+                            "sPrevious": "Anterior"
+                        }
+                    },
+                    "dom": "frtip",
+                }).columns.adjust().responsive.recalc();
+            });
+        </script>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>Warning:</strong> @ViewBag.Error
+        </div>
+    }
+}

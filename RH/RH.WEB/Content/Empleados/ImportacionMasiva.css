@@ -1,0 +1,21 @@
+﻿.panel-heading {
+    padding-bottom: 5%;
+}
+.btnPanel {
+    width: 100%;
+}
+
+.panel-body {
+    display: none;
+}
+
+#tblRecords {
+    height: 460px;
+}
+
+#btnUploadRecords {
+    display: none;
+}
+#countRecords {
+    display: none;
+}

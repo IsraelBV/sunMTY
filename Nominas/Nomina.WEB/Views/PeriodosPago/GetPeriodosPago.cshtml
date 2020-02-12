@@ -1,0 +1,134 @@
+﻿@using System.Web.Optimization
+@using RH.Entidades;
+@using RH.BLL;
+@model List<NOM_PeriodosPago>
+
+<style>
+    .dt-buttons {
+        padding-left: 10px;
+    }
+
+    #titulo {
+        position: fixed;
+        top: 5px;
+        margin-top: -10px;
+        color: #fff;
+    }
+</style>
+<div id="titulo">
+    <div class="main-content-title">
+        <h4 class="pull-left">Periodos De Pago</h4>
+    </div>
+</div>
+
+<div class="main-content-body" style="padding: 5px;">
+    @*<div class="table-panel">
+            <a class="btnPeriodoModal" disabled="disabled" ><span class="glyphicon glyphicon-eye-open"></span> DETALLE</a>
+        </div>*@
+    <table class="display" id="tablaPeriodos">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Días</th>
+                <th>Tipo</th>
+                <th>Fechas</th>
+                <th>Bimestre</th>
+                <th>Solo C</th>
+                <th>Especial</th>
+                <th>Último</th>
+                <th class="text-center">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var status = "ACTIVO";
+                var classStatus = "label-success";
+                if(item.Autorizado == true)
+                {
+                    status = "AUTORIZADO";
+                    classStatus = "label-default";
+                }
+                if (item.CfdiGenerado == 2)
+                {
+                    classStatus = "label-primary";
+                }
+                <tr data-idperiodopago="@item.IdPeriodoPago" class="unselected @(item.SoloComplemento == true ? "text-danger" : "")">
+                    <td>@item.IdPeriodoPago</td>
+                    <td><b>@item.Descripcion</b></td>
+                    <td>@item.DiasPeriodo</td>
+                    <td>@Cat_Sat.GetPeriodicidadPagoById(item.IdTipoNomina).Descripcion</td>
+                    <td>@item.Fecha_Inicio.ToString("dd/MM") - @item.Fecha_Fin.ToString("dd/MM")</td>
+                    <td>@item.Bimestre</td>
+                    <td class=" text-danger">@(item.SoloComplemento == true ? "Si" : "-" )</td>
+                    <td>
+                        @if(item.Especial == true)
+                        {
+                            <input type="checkbox" checked disabled />
+                        }
+                        else
+                        {
+                            <input type="checkbox" disabled />
+                        }
+                    </td>
+                    <td>
+                        @if (item.Ultimo == true)
+                        {
+                            <input type="checkbox" checked disabled />
+                        }
+                        else
+                        {
+                            <input type="checkbox" disabled />
+                        }
+                    </td>
+                    <td class="status text-center">
+                        <span class="label @classStatus" style="display: block;">@status</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+
+<div class="modal fade" id="modal-periodo">
+    <div class="modal-dialog" style="width:1250px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="pull-left">Crear Nuevo Periodo de Pago</h4>
+            </div>
+            <div class="modal-body" id="modal-seleccion-empleados-body">
+                <div id="modalPeriodo">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modal-Detalleperiodo">
+    <div class="modal-dialog" style="width:1250px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="pull-left">Detalle Periodo</h4>
+            </div>
+            <div class="modal-body" id="modal-seleccion-empleados-body">
+                <div id="modalDetallePeriodo">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@Scripts.Render("~/bundles/getperiodoPagos");
+

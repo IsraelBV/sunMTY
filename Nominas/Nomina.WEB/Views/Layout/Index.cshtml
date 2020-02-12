@@ -1,0 +1,354 @@
+﻿@using Nomina.BLL
+@using RH.BLL
+@using Common.Utils
+@using RH.Entidades
+@model List<Empresa>
+@{ 
+    var periodo = ViewBag.periodo;
+    var empresa = ViewBag.empresa;
+    int count = 0;
+}
+@if (periodo == null)
+{
+    
+    <div class="error-page">
+        <div class="error-page-content">
+            <div class="error-title">
+            </div>
+            <div class="error-description">
+                <h1>¡Oops!</h1>
+                <p>Favor de seleccionar un periodo para proseguir .</p>
+                
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    if (periodo.Autorizado == false)
+    {
+        <div class="error-page">
+            <div class="error-page-content">
+                <div class="error-title">
+                </div>
+                <div class="error-description">
+                    <h1>¡Oops!</h1>
+                    <p>El Periodo @periodo.Descripcion no ha sido Autorizado .</p>
+
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <input type="hidden" value="@periodo.IdTipoNomina" id="idperiodo" />
+    <div class="row">
+        <div class="jumbotron" style="align-items:center;">
+
+            <div class="row" style="margin: 5px;">
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Periodo de pago </label>
+                            <input class="form-control" type="text" value="@periodo.Descripcion" disabled/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Fecha: </label>
+                            <input class="form-control" id="fecha" type="date" />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Consecutivo </label>
+                            <input class="form-control" id="consecutivo" type="text" value="1"  />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Tipo de Registro</label>
+                            <input class="form-control" type="text" value="H"disabled />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Clave de Servicio </label>
+                            <input class="form-control" type="text" value="NE" disabled/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Tipo de Reg. D </label>
+                            <input class="form-control" id="registroDetalle" type="text" value="D" disabled/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Clave Banco </label>
+                            <input class="form-control" type="text" value="072" disabled/>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Total Empleados </label>
+                            <input class="form-control" id="totalEmpleados" type="text" value="0"disabled />
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>Importe Total </label>
+                            <input class="form-control" id="importeTotal"type="text" value="0" disabled />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Empresa: </label>
+                        <select class="form-control" id="empresa">
+                            <option value="0"></option>
+                            @foreach (var e in Model)
+                            {
+                                <option value="@e.IdEmpresa"> @e.RazonSocial</option>
+                            }
+
+
+                        </select>
+                    </div>
+
+                </div>
+                <div class="col-md-12">
+                  
+                  
+                </div>
+            </div>
+           
+        </div>
+       
+    </div>
+    <div class="col-md-12" id="layout" style="margin-left:5px; margin-right:5px;">
+
+    </div>
+    }
+}
+
+
+
+<script>
+    $(document).ready(function () {
+        
+        var id = $("#idperiodo").val();
+        if(id != 11){
+            $("#empresa").change(function () {
+                var empresa = $('select[id=empresa]').val();
+                var request = $.ajax({
+                    url: "/Layout/tablaLayout",
+                    method: "POST",
+                    data:
+                        {
+                            idEmpresa: empresa
+                        },
+                    beforeSend: function () {
+                        waitingDialog.show('Procesando...');
+                    }
+                });
+
+                request.done(function (data) {
+                    waitingDialog.hide();
+                    $('#layout').html(data);
+                });
+
+            });
+        } else {
+            $("#empresa").change(function () {
+                var empresa = $('select[id=empresa]').val();
+                var request = $.ajax({
+                    url: "/Layout/tablaLayoutFiniquito",
+                    method: "POST",
+                    data:
+                        {
+                            idEmpresa: empresa
+                        },
+                    beforeSend: function () {
+                        waitingDialog.show('Procesando...');
+                    }
+                });
+
+                request.done(function (data) {
+                    waitingDialog.hide();
+                    $('#layout').html(data);
+                });
+
+            });
+        }
+      
+        
+   
+
+        //var table =   $("table.EmpleadosTesoreria").DataTable({
+        //      dom: 'Bfrtip',
+        //      scrollY: '280px',
+        //      scrollX: true,
+        //      scrollCollapse: true,
+        //      paging: false,
+        //      "language": { "url": "../scripts/datatables-spanish.json" },
+        //      info: false,
+        //      select:{
+        //          style: 'multi'
+        //      },
+        //      "fixedColumns": {
+        //          leftColumns: 2,
+        //          rightColumns: 1
+
+        //      },
+        //      "buttons": [
+        //      {
+        //          className : 'seleccionarall',
+        //          text: 'Seleccionar: Todos',
+        //          action: function () {
+        //              table.rows().select();
+        //              $(this).toggleClass('selected');
+
+        //              var count = table.rows('.selected').count();
+
+        //              $("#totalEmpleados").val(count);
+
+        //              var selected = $("#EmpleadosTesoreria").find(".selected");
+
+        //              var contador = 0;
+        //              selected.each(function () {
+        //                  var importe = parseFloat($(this).data("importe"));
+        //                  contador = contador + importe;
+
+        //              });
+        //              $("#importeTotal").val(contador);
+        //          },key: {
+        //              key: 'a',
+
+        //          }
+        //      },
+        //      {
+        //          className: 'seleccionarcero',
+        //          text: 'Seleccionar: Ninguno',
+        //          action: function () {
+        //              table.rows().deselect();
+        //              $(this).toggleClass('selected');
+
+        //              var count = table.rows('.selected').count();
+
+        //              $("#totalEmpleados").val(count);
+
+        //              var selected = $("#EmpleadosTesoreria").find(".selected");
+
+        //              var contador = 0;
+        //              selected.each(function () {
+        //                  var importe = parseFloat($(this).data("importe"));
+        //                  contador = contador + importe;
+
+        //              });
+        //              $("#importeTotal").val(contador);
+
+        //          }
+        //      },
+        //              {
+        //                  className: 'seleccionarcero',
+        //                  text: '<i class="fa fa-download"></i> Crear Layout',
+        //                  action: function () {
+        //                     $(this).toggleClass('selected');
+        //                      var selected = $("#EmpleadosTesoreria").find(".selected");
+        //                      var contador = 0;
+
+        //                      var fecha = $("#fecha").val().replace(new RegExp('-', 'g'), "");
+        //                      var Encabezado = {};
+        //                      Encabezado["TipoRegistro"] = "H";
+        //                      Encabezado["ClaveServicio"] = "NE";
+
+        //                      Encabezado["Fecha"] = fecha;
+        //                      Encabezado["Consecutivo"] = $("#consecutivo").val();
+        //                      Encabezado["TotalEmpleados"] = $("#totalEmpleados").val();
+        //                      Encabezado["ImporteTotal"] = $("#importeTotal").val();
+
+        //                      console.log(Encabezado);
+
+        //                      var Detalle = [];
+        //                      var Emisoras = [];
+        //                      selected.each(function () {
+        //                          item = {}
+        //                          itemEmisoras = {};
+        //                          item["TipoRegistro"] = "D";
+        //                          item["Fecha"] = fecha;
+        //                          item["NoSiga1"] = parseInt($(this).data("siga"));
+        //                          item["importe"] = parseFloat($(this).data("importe"));
+        //                          item["Banco"] = 72;
+        //                          item["TipoCuenta"] = 1;
+        //                          item["CuentaBancaria"] = parseInt($(this).data("numerocuenta"));
+        //                          item["NoEmisor"] = parseInt($(this).data("emisora"));
+        //                          itemEmisoras["NoEmisor"] = parseInt($(this).data("emisora"));
+        //                          Detalle.push(item);
+        //                          Emisoras.push(itemEmisoras);
+        //                      });
+
+
+        //                      var request = $.ajax({
+        //                          url: "/Layout/crearLayout/",
+        //                          method: "POST",
+        //                          contentType: "application/json",
+        //                          data: JSON.stringify({
+        //                              Encabezado: Encabezado,
+        //                              Detalle: Detalle,
+        //                              Emisoras: Emisoras
+        //                          }),
+        //                          dataType: "json",
+        //                          beforeSend: function () {
+        //                              waitingDialog.show('Generando Layout-......');
+
+        //                          }
+        //                      });
+        //                      request.done(function (data) {
+        //                          waitingDialog.hide();
+
+
+        //                          var newdata = JSON.stringify(data);
+        //                          var newdata2 = data.toString()
+        //                          var ruta = []
+
+        //                          rute = newdata2.split(",");
+
+        //                          var contador = rute.length;
+        //                          $("#consecutivo").val(contador);
+        //                          for (var i = 0; i < contador; i++) {
+
+        //                              //window.location.href = "/Layout/descargarLayout?ruta=" + rute[i] + "&Token=9014901"
+        //                              window.open('/Layout/descargarLayout?ruta=' + rute[i], '_blank');
+
+        //                          }
+
+        //                      })
+        //                  }
+        //              },
+
+
+        //      ],
+
+        //});
+
+        //$('#EmpleadosTesoreria tbody').on('click', 'tr', function () {
+        //    $(this).toggleClass('selected');
+
+        //    var count = table.rows('.selected').count();
+
+        //  $("#totalEmpleados").val(count);
+
+        //  var selected = $("#EmpleadosTesoreria").find(".selected");
+
+        //  var contador = 0;
+        //  selected.each(function () {
+        //      var importe = parseFloat($(this).data("importe"));
+        //      contador = contador + importe;
+
+        //  });
+        //  $("#importeTotal").val(contador);
+
+        //});
+    });
+
+
+</script>

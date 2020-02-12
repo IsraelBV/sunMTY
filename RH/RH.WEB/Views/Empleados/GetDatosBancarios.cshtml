@@ -1,0 +1,167 @@
+﻿@model List<RH.BLL.DatosBancariosViewModel>
+<table class="table table-hover table-striped">
+    <thead>
+        <tr>
+            <th>Banco</th>
+            <th>Siga1</th>
+            <th>Siga2</th>
+            <th>Cuenta </th>
+            <th>No Tarjeta</th>
+            <th>CLABE</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var item in Model)
+        {
+            <tr id="@item.Id" data-iddbancario="@item.Id">
+                <td>@item.Banco</td>
+                <td>@item.NoSigaF</td>
+                <td>@item.NoSigaC</td>
+                <td>@item.CuentaBancaria</td>
+                <td>@item.NumTarjeta</td>
+                <td>@item.Clabe</td>
+                <td>
+                    <a href="/Empleados/GetDatosBancariosById/@item.Id" data-ajax-update="#detail-bank-account-content" data-ajax-mode="replace" data-ajax="true" class="btn-table btnVerBancarios">
+                        <i class="fa fa-search"></i>
+                    </a>
+                </td>
+                <td>
+                    <button class="label label-primary btnDelete hovercancelado"
+                            data-toggle="confirmation"
+                            data-title="¿Realmente deseas eliminar este dato bancario?"
+                            data-placement="bottom"
+                            data-singleton="true"
+                            data-popout="true"
+                            data-btn-ok-label="Sí"
+                            data-btn-ok-class="hovernuevo"
+                            data-btn-cancel-label="No"
+                            data-btn-cancel-class="hovercancelado">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="modal fade" id="new-bank-account">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Agregar Registro Bancario</h4>
+            </div>
+            <div class="modal-body">
+                @{
+                    Html.RenderAction("NewDatosBancarios", "Empleados");
+                }
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSaveDatosBancarios">Guardar</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="detail-bank-account">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Detalle Registro Bancario</h4>
+            </div>
+            <div class="modal-body">
+                <div id="detail-bank-account-content"></div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnEditarBancarios">Editar</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#btnNew").click(function () {
+            $("#DatosBancariosForm").find(".form-disabled").attr("disabled", false);
+            $("#FK-Empleado").val($("#IdEmpleado").html());
+            $("#new-bank-account").modal("show");
+        });
+
+        $("#btnSaveDatosBancarios").click(function () {
+            $("#new-bank-account").modal("hide");
+            setTimeout(function () {
+                $("#DatosBancariosForm").submit();
+            }, 2000);
+        });
+
+        $(".btnVerBancarios").click(function () {
+            $("#detail-bank-account").modal("show");
+        });
+
+        $("#btnEditarBancarios").click(function() {
+            $("#detail-bank-account").modal("hide");
+            setTimeout(function() {
+                    $("#form-update-datos-bancarios").submit();
+                },
+                1500);
+        });
+
+
+        //Permite usar las confirmaciones de bootstrap
+        $('[data-toggle=confirmation]').confirmation({
+            rootSelector: '[data-toggle=confirmation]',
+
+            onConfirm: function () {
+                var $row = $(this).parent().parent();
+                var idDatoB = $row.data("iddbancario");
+                console.log(idDatoB);
+                $.ajax({
+                    url: "/Empleados/DeleteDatoBancarioById",
+                    method: "POST",
+                    data: {
+                        id: idDatoB
+                    }
+                }).done(function (data) {
+                    if (data) {
+                        $row.hide();
+                        $.notify({
+                            title: "<b>¡Éxito!</b>",
+                            message: "Se ha eliminado los datos bancarios",
+                        }, {
+                            type: "success",
+                            animate: {
+                                enter: 'animated fadeInDown',
+                                exit: 'animated fadeOutUp'
+                            },
+                            placement: { from: 'top', align: 'center' },
+                            offset: 55, timer: 5000
+                        });
+                    }
+                    else {
+                        $.notify({
+                            title: "<b>¡Error!</b>",
+                            message: "Ha ocurrido un error inesperado. Por favor intenta de nuevo.",
+                        }, {
+                            type: "error",
+                            animate: {
+                                enter: 'animated fadeInDown',
+                                exit: 'animated fadeOutUp'
+                            },
+                            placement: { from: 'top', align: 'center' },
+                            offset: 55, timer: 5000
+                        });
+                    }
+                });
+            }
+        });
+
+    });
+</script>
+

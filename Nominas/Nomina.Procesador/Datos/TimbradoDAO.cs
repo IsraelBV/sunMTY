@@ -1421,7 +1421,8 @@ namespace Nomina.Procesador.Datos
                              join c in context.C_NOM_Conceptos on nd.IdConcepto equals c.IdConcepto
                              join otroPago in context.C_TipoOtroPago_SAT on c.IdTipoOtroPago equals otroPago.IdTipoOtroPago
                              where arraynominas.Contains(nd.IdNomina) &&
-                                   c.TipoConcepto == 1 && c.IdTipoOtroPago > 0 && nd.Total > 0
+                                   c.TipoConcepto == 1 && c.IdTipoOtroPago > 0 && (nd.Total > 0 || nd.IdConcepto.Equals(144))
+
                              select new ConceptosNomina()
                              {
                                  IdConcepto = nd.IdConcepto,

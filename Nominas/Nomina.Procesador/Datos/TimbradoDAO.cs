@@ -1439,6 +1439,32 @@ namespace Nomina.Procesador.Datos
                                  IdFiniquito = 0
                              }).ToList();
 
+                    var arrayIdNominasConSubsidio = r.Where(x => x.IdConcepto == 144).Select(x => x.IdNomina).ToArray();
+                    var arrayIdNominasSinSubsicio = arraynominas.Except(arrayIdNominasConSubsidio);
+                    if (arrayIdNominasSinSubsicio.Count() > 0)
+                    {
+                        foreach (var IdNominasSinSubsicio in arrayIdNominasSinSubsicio)
+                        {
+                            r.Add((from c in context.C_NOM_Conceptos
+                                   where c.IdConcepto == 144
+                                 select new ConceptosNomina()
+                                 {
+                                     IdConcepto = c.IdConcepto,
+                                     NombreConcepto = c.DescripcionCorta,
+                                     Importe = 0,
+                                     Gravado = 0,
+                                     Excento = 0,
+                                     ClaveSat = c.Clave,
+                                     IdTipoOtroPago = c.IdTipoOtroPago,
+                                     ClaveContable = c.Cuenta_Acredora,
+                                     //<- confirmar si se debe usar la cuenta acredora o deudora de contabilidad
+                                     ClaveOtroPago = c.Clave,
+                                     IdNomina = IdNominasSinSubsicio,
+                                     IdFiniquito = 0
+                                 }).FirstOrDefault());
+                        }   
+                    }
+
                     return r;
                 }
             }

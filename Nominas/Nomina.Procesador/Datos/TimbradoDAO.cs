@@ -1394,7 +1394,7 @@ namespace Nomina.Procesador.Datos
                              join otroPago in context.C_TipoOtroPago_SAT on c.IdTipoOtroPago equals otroPago.IdTipoOtroPago
                              where arraynominas.Contains(fd.IdFiniquito) &&
                                    c.TipoConcepto == 1 && c.IdTipoOtroPago > 0
-                                   && fd.Total > 0
+                                   && (fd.Total > 0 || fd.IdConcepto.Equals(144))
                              select new ConceptosNomina()
                              {
                                  IdConcepto = fd.IdConcepto,
@@ -1409,6 +1409,30 @@ namespace Nomina.Procesador.Datos
                                  ClaveContable = c.Cuenta_Acredora,
                                  ClaveOtroPago = otroPago.Clave
                              }).ToList();
+
+                    var listaIdConceptos = r.Select(x => x.IdConcepto).ToArray();
+                    var conSubsidio = listaIdConceptos.Contains(144);
+
+                    if (!conSubsidio)
+                    {
+                        r.Add((from c in context.C_NOM_Conceptos
+                               where c.IdConcepto == 144
+                               select new ConceptosNomina()
+                               {
+                                   IdConcepto = c.IdConcepto,
+                                   NombreConcepto = c.DescripcionCorta,
+                                   Importe = 0,
+                                   Gravado = 0,
+                                   Excento = 0,
+                                   ClaveSat = c.Clave,
+                                   IdTipoOtroPago = c.IdTipoOtroPago,
+                                   ClaveContable = c.Cuenta_Acredora,
+                                   //<- confirmar si se debe usar la cuenta acredora o deudora de contabilidad
+                                   ClaveOtroPago = c.Clave,
+                                   IdNomina = 0,
+                                   IdFiniquito = arraynominas.FirstOrDefault()
+                               }).FirstOrDefault());
+                    }
 
                     return r;
                 }

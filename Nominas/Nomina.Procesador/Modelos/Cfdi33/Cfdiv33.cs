@@ -1,5 +1,6 @@
 ﻿
 using System.Xml.Serialization;
+using Nomina.Procesador.Modelos.Nomina12;
 
 namespace Nomina.Procesador.Modelos.Cfdi33
 {
@@ -23,8 +24,11 @@ namespace Nomina.Procesador.Modelos.Cfdi33
         private ComprobanteConcepto[] conceptosField;
 
         private ComprobanteImpuestos impuestosField;
-
-        private ComprobanteComplemento[] complementoField;
+        //////
+        //////Cambio de septiembre respecto a los namespaces
+        //////
+        //private ComprobanteComplemento[] complementoField;
+        private ComprobanteComplemento complementoField;
 
         private ComprobanteAddenda addendaField;
 
@@ -115,14 +119,22 @@ namespace Nomina.Procesador.Modelos.Cfdi33
             set { this.impuestosField = value; }
         }
 
+        //////
+        //////Cambio de septiembre respecto a los namespaces
+        //////
         /// <comentarios/>
-        [System.Xml.Serialization.XmlElementAttribute("Complemento")]
-        public ComprobanteComplemento[] Complemento
+        //[System.Xml.Serialization.XmlElementAttribute("Complemento")]
+        //public ComprobanteComplemento[] Complemento
+        //{
+        //    get { return this.complementoField; }
+        //    set { this.complementoField = value; }
+        //}
+
+        public ComprobanteComplemento Complemento
         {
             get { return this.complementoField; }
             set { this.complementoField = value; }
         }
-
         /// <comentarios/>
         public ComprobanteAddenda Addenda
         {
@@ -1395,24 +1407,44 @@ namespace Nomina.Procesador.Modelos.Cfdi33
         }
     }
 
+
+    //////
+    //////Cambio de septiembre respecto a los namespaces
+    //////
+    //[System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.33440")]
+    //[System.SerializableAttribute()]
+    //[System.Diagnostics.DebuggerStepThroughAttribute()]
+    //[System.ComponentModel.DesignerCategoryAttribute("code")]
+    ////[System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.sat.gob.mx/cfd/3")]
+    //public partial class ComprobanteComplemento
+    //{
+    //    private System.Xml.XmlElement[] anyField;
+
+    //    /// <comentarios/>
+    //    [System.Xml.Serialization.XmlAnyElementAttribute()]
+    //    public System.Xml.XmlElement[] Any
+    //    {
+    //        get { return this.anyField; }
+    //        set { this.anyField = value; }
+    //    }
+    //}
+
     /// <comentarios/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.33440")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.sat.gob.mx/cfd/3")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://www.sat.gob.mx/nomina12")]
     public partial class ComprobanteComplemento
     {
-
-        private System.Xml.XmlElement[] anyField;
-
-        /// <comentarios/>
-        [System.Xml.Serialization.XmlAnyElementAttribute()]
-        public System.Xml.XmlElement[] Any
+        private Modelos.Nomina12.Nomina NominaField;
+        
+        public Modelos.Nomina12.Nomina Nomina
         {
-            get { return this.anyField; }
-            set { this.anyField = value; }
+            get { return this.NominaField; }
+            set { this.NominaField = value; }
         }
+        
     }
 
     /// <comentarios/>

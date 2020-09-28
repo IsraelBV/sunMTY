@@ -617,7 +617,7 @@ XslCompiledTransform transformador,
 
 
                 comprobante33.LugarExpedicion = emisorDatos.CP; //codigo postal del cat del sat  [0-9]{5}
-                comprobante33.schemaLocation = "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/nomina12 http://www.sat.gob.mx/sitio_internet/cfd/nomina/nomina12.xsd ";
+                comprobante33.schemaLocation = "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/nomina12 http://www.sat.gob.mx/sitio_internet/cfd/nomina/nomina12.xsd http://www.sat.gob.mx/informacion_fiscal/factura_electronica/Documents/Complementoscfdi/nomina12.xsd";
                 //comprobante33.Confirmacion = "";
 
                 comprobante33.SubTotal = subtotal;
@@ -780,23 +780,32 @@ XslCompiledTransform transformador,
 
                 #region GENERAR EL TAG NOMINA Y SE ANEXA AL COMPLEMENTO DEL COMPROBANTE 3.3
 
-                //Genera los tag xml de la nomina 1.2 -  que se anexará al tag de complemento
-                var elementResult = MSatXml.GetXmlElement(nomina12);
-                XmlElement[] arrayXmlElements = new XmlElement[1];
 
-                arrayXmlElements[0] = elementResult;
+                //////
+                //////Cambio de septiembre respecto a los namespaces
+                //////
+                ////Genera los tag xml de la nomina 1.2 -  que se anexará al tag de complemento
+                //var elementResult = MSatXml.GetXmlElement(nomina12);
+                //XmlElement[] arrayXmlElements = new XmlElement[1];
 
-                //Genera Tag complemento de nomina donde agregamos los tag xml de la nomina 1.2
-                Modelos.Cfdi33.ComprobanteComplemento comprobanteComplemento = new Modelos.Cfdi33.ComprobanteComplemento()
-                {
-                    Any = arrayXmlElements
-                };
+                //arrayXmlElements[0] = elementResult;
 
-                Modelos.Cfdi33.ComprobanteComplemento[] arrayComplementos = new Modelos.Cfdi33.ComprobanteComplemento[1];
-                arrayComplementos[0] = comprobanteComplemento;
+                ////Genera Tag complemento de nomina donde agregamos los tag xml de la nomina 1.2
+                //Modelos.Cfdi33.ComprobanteComplemento comprobanteComplemento = new Modelos.Cfdi33.ComprobanteComplemento()
+                //{
+                //    Any = arrayXmlElements
+                //};
 
-                //Agrega el tag complemento al xml 3.3
-                comprobante33.Complemento = arrayComplementos;
+                //Modelos.Cfdi33.ComprobanteComplemento[] arrayComplementos = new Modelos.Cfdi33.ComprobanteComplemento[1];
+                //arrayComplementos[0] = comprobanteComplemento;
+
+                ////Agrega el tag complemento al xml 3.3
+                //comprobante33.Complemento = arrayComplementos;
+
+                var comprobanteComplemento = new Modelos.Cfdi33.ComprobanteComplemento();
+                comprobanteComplemento.Nomina = nomina12;
+
+                comprobante33.Complemento = comprobanteComplemento;
 
                 #endregion
 
@@ -883,7 +892,7 @@ XslCompiledTransform transformador,
             nomina12.FechaInicialPago = DateTime.Parse(datosNomina.FechaInicialdePago);
             nomina12.FechaFinalPago = fechaFinalPago; //DateTime.Parse(datosNomina.FechaFinaldePago);
             nomina12.NumDiasPagados = datosNomina.DiasPagados;
-            nomina12.schemaLocation = "http://www.sat.gob.mx/nomina12 http://www.sat.gob.mx/informacion_fiscal/factura_electronica/Documents/Complementoscfdi/nomina12.xsd";
+            //nomina12.schemaLocation = "http://www.sat.gob.mx/nomina12 http://www.sat.gob.mx/informacion_fiscal/factura_electronica/Documents/Complementoscfdi/nomina12.xsd";
 
             #region EMISOR - RECEPTOR 1.2 3.3
 

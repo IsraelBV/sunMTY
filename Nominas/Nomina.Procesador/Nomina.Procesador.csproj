@@ -93,7 +93,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
-    <Compile Include="TimbradoCore.cs" />
     <Compile Include="TimbradoCoreV2.cs" />
   </ItemGroup>
   <ItemGroup>

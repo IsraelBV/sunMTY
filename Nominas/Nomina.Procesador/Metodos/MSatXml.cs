@@ -225,7 +225,9 @@ namespace Nomina.Procesador.Metodos
         {
             //Prefix NameSpaces - cfdi
             XmlSerializerNamespaces nsCfdi = new XmlSerializerNamespaces();
+            
             nsCfdi.Add("cfdi", "http://www.sat.gob.mx/cfd/3");
+            nsCfdi.Add("nomina12", "http://www.sat.gob.mx/nomina12");
             nsCfdi.Add("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 
 

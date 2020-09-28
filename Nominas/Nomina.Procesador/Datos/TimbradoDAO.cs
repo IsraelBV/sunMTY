@@ -1394,7 +1394,7 @@ namespace Nomina.Procesador.Datos
                              join otroPago in context.C_TipoOtroPago_SAT on c.IdTipoOtroPago equals otroPago.IdTipoOtroPago
                              where arraynominas.Contains(fd.IdFiniquito) &&
                                    c.TipoConcepto == 1 && c.IdTipoOtroPago > 0
-                                   && fd.Total > 0
+                                   && (fd.Total > 0 || fd.IdConcepto.Equals(144))
                              select new ConceptosNomina()
                              {
                                  IdConcepto = fd.IdConcepto,
@@ -1410,6 +1410,30 @@ namespace Nomina.Procesador.Datos
                                  ClaveOtroPago = otroPago.Clave
                              }).ToList();
 
+                    var listaIdConceptos = r.Select(x => x.IdConcepto).ToArray();
+                    var conSubsidio = listaIdConceptos.Contains(144);
+
+                    if (!conSubsidio)
+                    {
+                        r.Add((from c in context.C_NOM_Conceptos
+                               where c.IdConcepto == 144
+                               select new ConceptosNomina()
+                               {
+                                   IdConcepto = c.IdConcepto,
+                                   NombreConcepto = c.DescripcionCorta,
+                                   Importe = 0,
+                                   Gravado = 0,
+                                   Excento = 0,
+                                   ClaveSat = c.Clave,
+                                   IdTipoOtroPago = c.IdTipoOtroPago,
+                                   ClaveContable = c.Cuenta_Acredora,
+                                   //<- confirmar si se debe usar la cuenta acredora o deudora de contabilidad
+                                   ClaveOtroPago = c.Clave,
+                                   IdNomina = 0,
+                                   IdFiniquito = arraynominas.FirstOrDefault()
+                               }).FirstOrDefault());
+                    }
+
                     return r;
                 }
             }
@@ -1421,7 +1445,8 @@ namespace Nomina.Procesador.Datos
                              join c in context.C_NOM_Conceptos on nd.IdConcepto equals c.IdConcepto
                              join otroPago in context.C_TipoOtroPago_SAT on c.IdTipoOtroPago equals otroPago.IdTipoOtroPago
                              where arraynominas.Contains(nd.IdNomina) &&
-                                   c.TipoConcepto == 1 && c.IdTipoOtroPago > 0 && nd.Total > 0
+                                   c.TipoConcepto == 1 && c.IdTipoOtroPago > 0 && (nd.Total > 0 || nd.IdConcepto.Equals(144))
+
                              select new ConceptosNomina()
                              {
                                  IdConcepto = nd.IdConcepto,
@@ -1437,6 +1462,32 @@ namespace Nomina.Procesador.Datos
                                  IdNomina = nd.IdNomina,
                                  IdFiniquito = 0
                              }).ToList();
+
+                    var arrayIdNominasConSubsidio = r.Where(x => x.IdConcepto == 144).Select(x => x.IdNomina).ToArray();
+                    var arrayIdNominasSinSubsicio = arraynominas.Except(arrayIdNominasConSubsidio);
+                    if (arrayIdNominasSinSubsicio.Count() > 0)
+                    {
+                        foreach (var IdNominasSinSubsicio in arrayIdNominasSinSubsicio)
+                        {
+                            r.Add((from c in context.C_NOM_Conceptos
+                                   where c.IdConcepto == 144
+                                 select new ConceptosNomina()
+                                 {
+                                     IdConcepto = c.IdConcepto,
+                                     NombreConcepto = c.DescripcionCorta,
+                                     Importe = 0,
+                                     Gravado = 0,
+                                     Excento = 0,
+                                     ClaveSat = c.Clave,
+                                     IdTipoOtroPago = c.IdTipoOtroPago,
+                                     ClaveContable = c.Cuenta_Acredora,
+                                     //<- confirmar si se debe usar la cuenta acredora o deudora de contabilidad
+                                     ClaveOtroPago = c.Clave,
+                                     IdNomina = IdNominasSinSubsicio,
+                                     IdFiniquito = 0
+                                 }).FirstOrDefault());
+                        }   
+                    }
 
                     return r;
                 }

@@ -328,8 +328,8 @@ namespace Nomina.BLL
             using (var context = new RHEntities())
             {
                 var datos = (from emp in context.Empleado
-                             join con in context.Empleado_Contrato
-                             on emp.IdEmpleado equals con.IdEmpleado
+                             //join con in context.Empleado_Contrato
+                             //on emp.IdEmpleado equals con.IdEmpleado
                              where emp.IdSucursal == idSucursal && emp.RFCValidadoSAT == rfc
                              select new EmpleadoNomina
                              {

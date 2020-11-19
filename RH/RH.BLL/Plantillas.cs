@@ -356,6 +356,8 @@ namespace RH.BLL
                         var puesto = ps.GetPuesto(contrato.IdPuesto);
                         document.ReplaceText("<<Empleado_Puesto>>", puesto.Descripcion);
                     }
+                    document.ReplaceText("<<Empleado_SalarioDiarioIntegrado>>", contrato.SDI.ToString());//para contrato de tiempo determinado
+                    document.ReplaceText("<<Empleado_SalarioDiarioIntegradoLetras>>", Utils.ConvertCantidadALetras(contrato.SDI.ToString()));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_SalarioDiario>>", contrato.SD.ToString());
                     document.ReplaceText("<<Empleado_SalarioDiarioLetras>>", Utils.ConvertCantidadALetras(contrato.SD.ToString()));
                     var periocidad = _ctx.C_PeriodicidadPago_SAT.Where(x => x.IdPeriodicidadPago == contrato.IdPeriodicidadPago).Select(x => x.Descripcion).FirstOrDefault();
@@ -368,9 +370,14 @@ namespace RH.BLL
                     document.ReplaceText("<<Empleado_BancoDeCuenta>>", descripcionb);
                     document.ReplaceText("<<Empleado_FechaAntiguedad>>", contrato.FechaReal.ToString("dd-MM-yyyy"));
                     document.ReplaceText("<<Empleado_FechaAltaIMSS>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("dd-MM-yyyy"));
+                    document.ReplaceText("<<Empleado_FechaAltaIMSSMes>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("MM"));//para contrato de tiempo determinado
+                    document.ReplaceText("<<Empleado_FechaAltaIMSSDia>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("dd"));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_DiasDeContrato>>", contrato.DiasContrato.ToString());
-                    document.ReplaceText("<<Empleado_VenceContrato>>", contrato.Vigencia.ToString());
-                   
+                    document.ReplaceText("<<Empleado_VenceContrato>>", contrato.Vigencia == null ? "sin fecha" : contrato.FechaIMSS.Value.ToString("dd-MM-yyyy"));
+                    document.ReplaceText("<<Empleado_VenceContratoDia>>", contrato.Vigencia == null ? "sin fecha" : contrato.FechaIMSS.Value.ToString("dd"));
+                    document.ReplaceText("<<Empleado_VenceContratoMes>>", contrato.Vigencia == null ? "sin fecha" : contrato.FechaIMSS.Value.ToString("MM"));
+
+
                     document.SaveAs(newDoc);
                 }
             }

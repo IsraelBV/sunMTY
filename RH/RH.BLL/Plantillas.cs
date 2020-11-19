@@ -9,6 +9,8 @@ using System.Web;
 using Novacode;
 using Common.Utils;
 using SYA.BLL;
+using System.Globalization;
+
 namespace RH.BLL
 {
     public class Plantillas
@@ -370,12 +372,12 @@ namespace RH.BLL
                     document.ReplaceText("<<Empleado_BancoDeCuenta>>", descripcionb);
                     document.ReplaceText("<<Empleado_FechaAntiguedad>>", contrato.FechaReal.ToString("dd-MM-yyyy"));
                     document.ReplaceText("<<Empleado_FechaAltaIMSS>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("dd-MM-yyyy"));
-                    document.ReplaceText("<<Empleado_FechaAltaIMSSMes>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("MM"));//para contrato de tiempo determinado
+                    document.ReplaceText("<<Empleado_FechaAltaIMSSMes>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("MMMM", CultureInfo.CreateSpecificCulture("es")));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_FechaAltaIMSSDia>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("dd"));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_DiasDeContrato>>", contrato.DiasContrato.ToString());
                     document.ReplaceText("<<Empleado_VenceContrato>>", contrato.Vigencia == null ? "sin fecha" : contrato.FechaIMSS.Value.ToString("dd-MM-yyyy"));
                     document.ReplaceText("<<Empleado_VenceContratoDia>>", contrato.Vigencia == null ? "sin fecha" : contrato.FechaIMSS.Value.ToString("dd"));
-                    document.ReplaceText("<<Empleado_VenceContratoMes>>", contrato.Vigencia == null ? "sin fecha" : contrato.FechaIMSS.Value.ToString("MM"));
+                    document.ReplaceText("<<Empleado_VenceContratoMes>>", contrato.Vigencia == null ? "sin fecha" : contrato.FechaIMSS.Value.ToString("MMMM", CultureInfo.CreateSpecificCulture("es")));
 
 
                     document.SaveAs(newDoc);

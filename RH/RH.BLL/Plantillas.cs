@@ -362,8 +362,10 @@ namespace RH.BLL
                     document.ReplaceText("<<Empleado_SalarioDiarioIntegradoLetras>>", Utils.ConvertCantidadALetras(contrato.SDI.ToString()));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_SalarioDiario>>", contrato.SD.ToString());
                     document.ReplaceText("<<Empleado_SalarioDiarioLetras>>", Utils.ConvertCantidadALetras(contrato.SD.ToString()));
-                    var periocidad = _ctx.C_PeriodicidadPago_SAT.Where(x => x.IdPeriodicidadPago == contrato.IdPeriodicidadPago).Select(x => x.Descripcion).FirstOrDefault();
+                    var periocidad = _ctx.C_PeriodicidadPago_SAT.Where(x => x.IdPeriodicidadPago == contrato.IdPeriodicidadPago).Select(x => x.Descripcion).FirstOrDefault().ToLower();
+                    periocidad += "es";
                     document.ReplaceText("<<Empleado_TipoDeNomina>>", periocidad);
+                    document.ReplaceText("<<Empleado_sexo>>", empleado.Sexo);
 
                     if (cuentab != null)
                     {

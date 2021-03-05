@@ -303,6 +303,7 @@ namespace Nomina.Procesador.Metodos
                     //CALCULO DEL CREDITO -
                     var calculo = inf.GetInfonavitById(prestamoInfonavit.Id);
                     totalADescontar = diasDeDescuento * calculo.DescuentoDiario;
+                    totalADescontar += periodoPago.DiasPeriodo * Convert.ToDecimal(0.25);
                 }
 
                 //Se guarda como detalle de la nomina

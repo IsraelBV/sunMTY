@@ -1183,9 +1183,9 @@ namespace Nomina.Procesador.Metodos
 
                 #region MTY 2 - se incrementa la base gravable - forma de monterrey de como obtener menos subsidio o incrementar el isr
 
-                decimal baseGravableMty = sd * 30;
+                //decimal baseGravableMty = sd * 15;
 
-                BaseGravableFiniquito += baseGravableMty;
+                //BaseGravableFiniquito += baseGravableMty;
 
 
                 #endregion
@@ -1213,10 +1213,14 @@ namespace Nomina.Procesador.Metodos
                             ISRFiniquito.ResultadoIsrOSubsidio = 0;
                         }
 
+                        ISRFiniquito.ResultadoIsrOSubsidio = 80.33M;
+                        ISRFiniquito.Subsidio = 80.33M;
+                        ISRFiniquito.ResultadoIsrOSubsidio = 80.33M;
 
                         totalOtrosPagos = ISRFiniquito.ResultadoIsrOSubsidio;
                         subsidioCausado = ISRFiniquito.Subsidio;
                         subsidioEntregado = ISRFiniquito.ResultadoIsrOSubsidio;
+
                     }
                     else
                     {
@@ -1270,9 +1274,9 @@ namespace Nomina.Procesador.Metodos
                 decimal subTotalIndemnizacionF = calcularLiquidacion == false ? 0 : _3_MESES_SALARIO + _20_DIAS_POR_AÑO + _PRIMA_ANTIGUEDAD;
 
                 //Total Base Gravable Indermizacion  Fiscal-Complemento 
-                decimal totalBaseGravableIndemnizacion = subTotalIndemnizacion - proporcion_exentaLiquidacion;
+                decimal totalBaseGravableIndemnizacion = subTotalIndemnizacion > proporcion_exentaLiquidacion? subTotalIndemnizacion - proporcion_exentaLiquidacion:0;
                 //Total Base Gravable Indermizacion  Fiscal
-                decimal totalBaseGravableIndemnizacionF = subTotalIndemnizacionF - proporcion_exentaLiquidacion;
+                decimal totalBaseGravableIndemnizacionF = subTotalIndemnizacionF > proporcion_exentaLiquidacion? subTotalIndemnizacionF - proporcion_exentaLiquidacion:0;
 
                 // isr liquidacion fiscal-complemento
                 decimal ISR_Liquidacion = Utils.TruncateDecimales(totalBaseGravableIndemnizacion * tasaParaLiquidacion);

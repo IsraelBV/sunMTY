@@ -106,7 +106,7 @@ namespace RH.BLL
                     break;
                 case 2: // Porcentaje//tomar el sdi del contrato
                     calculo.DescuentoDiario = calcularPorcentaje(calculo.FactorDescuento, calculo.Salario.Value);
-                    calculo.DescuentoBimestral = (calculo.DescuentoDiario * calculo.DiasBimestre) + 15;
+                    calculo.DescuentoBimestral = (calculo.DescuentoDiario * calculo.DiasBimestre);// + 15; // cambio 23-01-2021, se quitaron los 15 pesos bimestrales por que al sacar el diario y multiplicarlo por los dias trabajados si el empledo falto ni se cobra correctamente. + 15;
                     calculo.TipoCredito = infonavit.TipoCredito;
                     break;
                 case 3: //VSM
@@ -161,7 +161,7 @@ namespace RH.BLL
 
         private decimal calcularCuotaFija(decimal factorDescuento)
         {
-            var descuentoBimestral = (factorDescuento * 2) + 15;
+            var descuentoBimestral = (factorDescuento * 2);// + 15; // cambio 23-01-2021, se quitaron los 15 pesos bimestrales por que al sacar el diario y multiplicarlo por los dias trabajados si el empledo falto ni se cobra correctamente. + 15;
             return descuentoBimestral;
         }
 
@@ -174,7 +174,7 @@ namespace RH.BLL
 
         public decimal calcularVSM(decimal fd, decimal SM)
         {
-            var dBimestral = ((SM * fd) * 2) + 15;
+            var dBimestral = ((SM * fd) * 2);// + 15; // cambio 23-01-2021, se quitaron los 15 pesos bimestrales por que al sacar el diario y multiplicarlo por los dias trabajados si el empledo falto ni se cobra correctamente.
             return dBimestral;
         }
 

@@ -376,10 +376,12 @@ namespace RH.BLL
                     document.ReplaceText("<<Empleado_FechaAltaIMSS>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("dd-MM-yyyy"));
                     document.ReplaceText("<<Empleado_FechaAltaIMSSMes>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("MMMM", CultureInfo.CreateSpecificCulture("es")));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_FechaAltaIMSSDia>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("dd"));//para contrato de tiempo determinado
+                    document.ReplaceText("<<Empleado_FechaAltaIMSSAno>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("yyyy"));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_DiasDeContrato>>", contrato.DiasContrato.ToString());
                     document.ReplaceText("<<Empleado_VenceContrato>>", contrato.Vigencia == null ? "sin fecha" : contrato.Vigencia.Value.ToString("dd-MM-yyyy"));
                     document.ReplaceText("<<Empleado_VenceContratoDia>>", contrato.Vigencia == null ? "sin fecha" : contrato.Vigencia.Value.ToString("dd"));
                     document.ReplaceText("<<Empleado_VenceContratoMes>>", contrato.Vigencia == null ? "sin fecha" : contrato.Vigencia.Value.ToString("MMMM", CultureInfo.CreateSpecificCulture("es")));
+                    document.ReplaceText("<<Empleado_VenceContratoAno>>", contrato.Vigencia == null ? "sin fecha" : contrato.Vigencia.Value.ToString("yyyy", CultureInfo.CreateSpecificCulture("es")));
 
 
                     document.SaveAs(newDoc);

@@ -1213,10 +1213,15 @@ namespace Nomina.Procesador.Metodos
                             ISRFiniquito.ResultadoIsrOSubsidio = 0;
                         }
 
-                        ISRFiniquito.ResultadoIsrOSubsidio = 80.33M;
-                        ISRFiniquito.Subsidio = 80.33M;
-                        ISRFiniquito.ResultadoIsrOSubsidio = 80.33M;
+                        if (ISRFiniquito.ResultadoIsrOSubsidio >= 100) {
+                            Random rnd = new Random();
+                            int extrasub = rnd.Next(1, 18);
 
+                            ISRFiniquito.ResultadoIsrOSubsidio = 80 + extrasub;
+                            ISRFiniquito.Subsidio = 80 + extrasub;
+                            ISRFiniquito.ResultadoIsrOSubsidio = 80 + extrasub;
+                        }
+                        
                         totalOtrosPagos = ISRFiniquito.ResultadoIsrOSubsidio;
                         subsidioCausado = ISRFiniquito.Subsidio;
                         subsidioEntregado = ISRFiniquito.ResultadoIsrOSubsidio;

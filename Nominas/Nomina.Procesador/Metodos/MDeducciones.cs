@@ -303,7 +303,8 @@ namespace Nomina.Procesador.Metodos
                     //CALCULO DEL CREDITO -
                     var calculo = inf.GetInfonavitById(prestamoInfonavit.Id);
                     totalADescontar = diasDeDescuento * calculo.DescuentoDiario;
-                    totalADescontar += periodoPago.DiasPeriodo * Convert.ToDecimal(0.25);
+                    decimal proporcional15diasporbimestre = (15.0M/calculo.DiasBimestre);// el proporcional que toca de descuento diario por los 15 pesos bimestrales
+                    totalADescontar += periodoPago.DiasPeriodo * proporcional15diasporbimestre;
                 }
 
                 //Se guarda como detalle de la nomina

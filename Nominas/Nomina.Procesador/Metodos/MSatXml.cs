@@ -251,6 +251,7 @@ namespace Nomina.Procesador.Metodos
                 serializer.Serialize(w, objetoComprobante, nsCfdi);
                 result = localEncoding.GetString(stream.ToArray(), 0, (int)stream.Length);
             }
+            result = result.Replace("&amp;", "&");
 
             return result;
         }

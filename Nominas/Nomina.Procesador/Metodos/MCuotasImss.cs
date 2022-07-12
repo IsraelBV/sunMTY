@@ -41,6 +41,7 @@ namespace Nomina.Procesador.Metodos
         private static decimal _totalPatron = 0;
         private static decimal _totalObrero = 0;
         private static decimal _SDI = 0;
+        private static decimal _topeSalarioImss = 0;
         private static int _idNomina = 0;
         private static int _idFiniquito = 0;
         private static decimal _SD = 0;
@@ -179,6 +180,7 @@ namespace Nomina.Procesador.Metodos
 
             //PARAMETROS DE CONFIGURACION
             _usarUMAParaCalculo = usarUMA;
+            _topeSalarioImss = uma * 25;
 
             //A) FACTOR VECES SALARIO MINIMO - CONSULTA REDUNDANTE 1
           // var factorSalarioMinimoGeneralVigente = _nominasDao.GetValorParametrosConfig(ParametrosDeConfiguracion.FSMGV); //para obtener el numero de veces del Salario minimo
@@ -219,10 +221,15 @@ namespace Nomina.Procesador.Metodos
 
             _SDI = nomina?.SDI ?? finiquito.SDI;
 
+
             _idNomina = nomina?.IdNomina ?? 0;//si el metodo es ejecutado desde el procesado de la nomina, se toma el idNomina
             _idFiniquito = finiquito?.IdFiniquito ?? 0;//si el metodo es ejecuta desde el procesado del finiquito, se toma el id del finiquito sino se inicializa a cero
             _SD = nomina?.SD ?? finiquito.SD;
             _sbc = nomina?.SDI ?? finiquito.SDI; //antes nomina?.SBC ?? finiquito.SBC;  // Salario Base de Cotizacion
+
+            _SD = _SDI <= _topeSalarioImss ? _SD : (_SDI/(decimal)1.0452);//calcula el tope de sdi para calculo de imss
+            _sbc = _SDI <= _topeSalarioImss ? _sbc : _topeSalarioImss;//calcula el tope de sdi para calculo de imss
+            _SDI = _SDI <= _topeSalarioImss ? _SDI : _topeSalarioImss;//calcula el tope de sdi para calculo de imss
 
             //CONSULTA REDUNDANTE 2
             //var tablaImss = _nominasDao.GeTablaImss();

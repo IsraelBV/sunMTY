@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -1282,6 +1282,9 @@ namespace Nomina.Procesador.Metodos
                 decimal totalBaseGravableIndemnizacion = subTotalIndemnizacion > proporcion_exentaLiquidacion? subTotalIndemnizacion - proporcion_exentaLiquidacion:0;
                 //Total Base Gravable Indermizacion  Fiscal
                 decimal totalBaseGravableIndemnizacionF = subTotalIndemnizacionF > proporcion_exentaLiquidacion? subTotalIndemnizacionF - proporcion_exentaLiquidacion:0;
+                //se actualiza el exento de la liquidacion para que sea mas que el gravable
+                proporcion_exentaLiquidacion = subTotalIndemnizacion > proporcion_exentaLiquidacion? proporcion_exentaLiquidacion: subTotalIndemnizacion;
+
 
                 // isr liquidacion fiscal-complemento
                 decimal ISR_Liquidacion = Utils.TruncateDecimales(totalBaseGravableIndemnizacion * tasaParaLiquidacion);

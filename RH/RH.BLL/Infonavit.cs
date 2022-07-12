@@ -114,7 +114,7 @@ namespace RH.BLL
                     if (infonavit.UsarUMA)
                     {
                         //salarioCalculo = zonaSalario.UMA;
-                        salarioCalculo = 87.21M;
+                        salarioCalculo = 93.63M;
                     }
                     else
                     {
@@ -135,7 +135,7 @@ namespace RH.BLL
                     if (infonavit.UsarUMA)
                     {
                         //salarioCalculo = zonaSalario.UMA;
-                        salarioCalculo = 87.21M;
+                        salarioCalculo = 93.63M;
                     }
                     else
                     {
@@ -267,7 +267,7 @@ namespace RH.BLL
             {
                 //se debe usar el UMI no el UMA
                 //return context.ZonaSalario.Where(x => x.Status == true).Select(x => x.UMA).FirstOrDefault();
-                return 87.21M;
+                return 93.63M;
             }
         }
     }

@@ -89,6 +89,11 @@
                         <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#LayoutModal"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Subir Layout Ajustes</button>
                     </div>
                 </div>
+                <div class="form-group col-md-3">
+                    <div>
+                        <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#LayoutModalDescuentos"><span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Subir Archivo Descuentos</button>
+                    </div>
+                </div>
             </div>
         }
         else
@@ -175,6 +180,26 @@
             </div>
             <div class="modal-body">
                 <input id="input" name="file" type="file" multiple class="file-loading" data-show-preview="true" data-autoReplace="true">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Modal archivo descuentos-->
+<div class="modal fade" id="LayoutModalDescuentos" role="dialog">
+    <div class="modal-dialog">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Subir Archivo De Descuentos</h4>
+            </div>
+            <div class="modal-body">
+                <input id="archivoDescuentos" name="file" type="file" multiple class="file-loading" data-show-preview="true" data-autoReplace="true">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -289,7 +314,25 @@
         msgUploadBegin: 'Subiendo el archivo'
     });
 
+    $("#archivoDescuentos").fileinput({
+        uploadUrl: "/Ajustes/UploadArchivoDescuentosCA/", 
+        uploadAsync: true,
+        maxFileCount: 1,
+        language: "es",
+        browseClass: "btn btn-danger btn-block",
+        allowedFileExtensions: ["txt", "csv"],
+        msgInvalidFileExtension: 'El formato de "{name}" es incorrecto. Solo archivos "{extensions}" son admitidos.',
+        msgUploadEnd: 'El archivo fue cargado correctamente',
+        msgUploadBegin: 'Subiendo el archivo'
+    });
+
     $('#LayoutModal').on('hidden.bs.modal', function (e) {
         utils.loadMainPage("Ajustes", "Index", "#main-content", "false", null);
     });
+
+    $('#LayoutModalDescuentos').on('hidden.bs.modal', function (e) {
+        utils.loadMainPage("Ajustes", "Index", "#main-content", "false", null);
+    });
+
+    
 </script>

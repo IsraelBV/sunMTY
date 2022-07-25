@@ -152,6 +152,29 @@ namespace Nomina.Procesador.Metodos
         }
 
 
+        //public static NOM_Nomina_Detalle CajaDeAhorro(NOM_Nomina nomina)
+        //{
+        //    NOM_Nomina_Detalle item = new NOM_Nomina_Detalle()
+        //    {
+        //        Id = 0,
+        //        IdNomina = 0,
+        //        IdConcepto = 0,
+        //        Total = 0,
+        //        GravadoISR = 0,
+        //        ExentoISR = 0,
+        //        IntegraIMSS = 0,
+        //        ExentoIMSS = 0,
+        //        ImpuestoSobreNomina = 0
+        //    };
+
+        //    return null;
+        //}
+
+        public static List<NOM_Nomina_Detalle> FondoDeAhorro(NOM_Nomina nomina, int tipoPeriodo, decimal UMA)
+        {
+            return CalculoFondoDeAhorro(nomina, tipoPeriodo, UMA);
+        }
+
         #region COMPLEMENTOS
         public static NOM_Nomina_Detalle PensionAlimenticiaComplemento(NOM_Nomina nomina, Empleado_Contrato contratoActual, bool isImpuestoSobreNomina = false, decimal porcentaje = 0)
         {
@@ -276,7 +299,7 @@ namespace Nomina.Procesador.Metodos
                     {
                         var diasRestantes = Utils.GetDiasEntreDosFechas(periodoPago.Fecha_Inicio, prestamoInfonavit.FechaSuspension.Value);
 
-                        diasDeDescuento = diasRestantes-1;
+                        diasDeDescuento = diasRestantes - 1;
                     }
                 }
 
@@ -303,7 +326,7 @@ namespace Nomina.Procesador.Metodos
                     //CALCULO DEL CREDITO -
                     var calculo = inf.GetInfonavitById(prestamoInfonavit.Id);
                     totalADescontar = diasDeDescuento * calculo.DescuentoDiario;
-                    decimal proporcional15diasporbimestre = (15.0M/calculo.DiasBimestre);// el proporcional que toca de descuento diario por los 15 pesos bimestrales
+                    decimal proporcional15diasporbimestre = (15.0M / calculo.DiasBimestre);// el proporcional que toca de descuento diario por los 15 pesos bimestrales
                     totalADescontar += periodoPago.DiasPeriodo * proporcional15diasporbimestre;
                 }
 
@@ -394,6 +417,81 @@ namespace Nomina.Procesador.Metodos
             }
 
             return null;
+        }
+
+        private static List<NOM_Nomina_Detalle> CalculoFondoDeAhorro(NOM_Nomina nomina, int tipoPeriodo, decimal UMA) {
+            List<NOM_Nomina_Detalle> listaFondoAhorro = new List<NOM_Nomina_Detalle>();
+            decimal UmaAnual = ((UMA * 1.3M) * 365);
+            int diasLaborados = nomina.Dias_Laborados;
+            decimal topePeriodo = 0;
+            decimal sd = nomina.SD;
+            decimal FactorPocentajeFondoAhorro = 0.06M;
+            decimal total;
+
+            if (tipoPeriodo == 2)
+            { //semanal
+                topePeriodo = UmaAnual / 52;
+            }
+            else if (tipoPeriodo == 4)
+            { //quincenal
+                topePeriodo = UmaAnual / 24;
+            }
+            else if (tipoPeriodo == 5)
+            { //mensual
+                topePeriodo = UmaAnual / 12;
+            }
+
+            var cantidadCaja = (sd * FactorPocentajeFondoAhorro) * diasLaborados;
+
+            total = (cantidadCaja < topePeriodo) ? cantidadCaja : topePeriodo;
+
+
+
+            NOM_Nomina_Detalle FondoAhorroEmpresa = new NOM_Nomina_Detalle()
+            {
+                Id = 0,
+                IdNomina = nomina.IdNomina,
+                IdConcepto = 5,
+                Total = total,
+                GravadoISR = 0,
+                ExentoISR = total,
+                IntegraIMSS = 0,
+                ExentoIMSS = 0,
+                ImpuestoSobreNomina = 0
+            };
+
+            listaFondoAhorro.Add(FondoAhorroEmpresa);
+
+
+            NOM_Nomina_Detalle FondoAhorroTrabajador = new NOM_Nomina_Detalle()
+            {
+                Id = 0,
+                IdNomina = nomina.IdNomina,
+                IdConcepto = 156,
+                Total = total,
+                GravadoISR = 0,
+                ExentoISR = 0,
+                IntegraIMSS = 0,
+                ExentoIMSS = 0,
+                ImpuestoSobreNomina = 0
+            };
+            listaFondoAhorro.Add(FondoAhorroTrabajador);
+
+            NOM_Nomina_Detalle FondoAhorroCIA = new NOM_Nomina_Detalle()
+            {
+                Id = 0,
+                IdNomina = nomina.IdNomina,
+                IdConcepto = 157,
+                Total = total,
+                GravadoISR = 0,
+                ExentoISR = 0,
+                IntegraIMSS = 0,
+                ExentoIMSS = 0,
+                ImpuestoSobreNomina = 0
+            };
+            listaFondoAhorro.Add(FondoAhorroCIA);
+
+            return listaFondoAhorro;
         }
     }
 }

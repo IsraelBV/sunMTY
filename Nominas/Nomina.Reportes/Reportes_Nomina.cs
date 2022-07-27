@@ -587,7 +587,7 @@ namespace Nomina.Reportes
             int sumaIdempleados = 0;
             decimal sumaSueldoMensual = 0;
             List<string> lineas = new List<string>();
-            lineas.Add("01, REGISTRO, SOCIO, CAMPO4, EMPRESA, PLANTA, C_DEPTO, NOMBRE, PATERNO, MATERNO, F_NACIM, SEXO, E_CIVIL, I_GRUPO, I_EMPRESA, F_PAGO, T_TRAB, R_PAGO, BANCO, CUENTA_B, S_MENSUAL, S_NETO, RFC, PLANPENSION_NOMBRE, PLAN_FECHAINGRESO");
+            lineas.Add("01,REGISTRO,SOCIO,CAMPO4,EMPRESA,PLANTA,C_DEPTO,NOMBRE,PATERNO,MATERNO,F_NACIM,SEXO,E_CIVIL,I_GRUPO,I_EMPRESA,F_PAGO,T_TRAB,R_PAGO,BANCO,CUENTA_B,S_MENSUAL,RFC,NIVEL_DEL_AVAL,AGUINALDO,PRIMA_V,PTU,FONDO_AH,PRESTA_FA,INCAPACIDAD");
 
             var reg = 1;//para llevar un contador en los renglones del moper
             foreach (var con in listaContratos)
@@ -601,8 +601,8 @@ namespace Nomina.Reportes
                 cadenaLinea += con.IdEmpleado.ToString() + ",";//SOCIO
                     sumaIdempleados += con.IdEmpleado;//para la ultima linea
                 cadenaLinea += 0 + ",";//CAMPO4
-                cadenaLinea += numeroEmpresaOdesa + ",";//---------------//EMPRESA
-                cadenaLinea += 1 + ",";//---------------//PLANTA
+                cadenaLinea += numeroEmpresaOdesa + ",";//EMPRESA
+                cadenaLinea += 1 + ",";//PLANTA
                 cadenaLinea += 0 + ",";//C_DEPTO
                 cadenaLinea += itemEmpleado.Nombres + ",";//NOMBRE
                 cadenaLinea += itemEmpleado.APaterno + ",";//PATERNO
@@ -613,20 +613,26 @@ namespace Nomina.Reportes
                 cadenaLinea += con.FechaReal.ToString("yyyyMMdd") + ",";//I_GRUPO
                 cadenaLinea += con.FechaReal.ToString("yyyyMMdd") + ",";//I_EMPRESA
                 cadenaLinea += tipoNominaMoper + ",";//F_PAGO
-                cadenaLinea += ",";//T_TRAB
+                cadenaLinea += "E,";//T_TRAB //Se usa la "E" como se recomendo por Odesa ya que en el catalogo significa empleado
                 cadenaLinea += "0,";//R_PAGO
-                cadenaLinea += UtilsFondoAhorro.claveBanco(itemDatoBancario.IdBanco) +",";//BANCO
-                var cuentaoclabe = (Int32.Parse(itemDatoBancario.CuentaBancaria) != 0)? itemDatoBancario.CuentaBancaria : itemDatoBancario.Clabe;
+                cadenaLinea += "\""+UtilsFondoAhorro.claveBanco(itemDatoBancario.IdBanco) + "\",";//BANCO
+                var cuentaoclabe = (itemDatoBancario.IdBanco == 2)? itemDatoBancario.CuentaBancaria : itemDatoBancario.Clabe;
+                //var cuentaoclabe = (Int32.Parse(itemDatoBancario.CuentaBancaria) != 0)? itemDatoBancario.CuentaBancaria : itemDatoBancario.Clabe;
                 cadenaLinea += cuentaoclabe + ",";//CUENTA_B
                 var sueldoMensual = Math.Round((con.SD * 30.4M),2);
                 cadenaLinea += sueldoMensual.ToString("f2") + ",";//S_MENSUAL
                     sumaSueldoMensual += sueldoMensual;//para la ultima linea
-                var netoNominaDia = itemNomina.TotalNomina / itemNomina.Dias_Laborados;
-                cadenaLinea += Math.Round((netoNominaDia * 30.4M),2).ToString("f2") + ",";//S_NETO
+                //var netoNominaDia = itemNomina.TotalNomina / itemNomina.Dias_Laborados;
+                //cadenaLinea += Math.Round((netoNominaDia * 30.4M),2).ToString("f2") + ",";//S_NETO // no es necesario siempre y cuando este el sueldo mensual
                 //cadenaLinea += itemNomina.TotalNomina + ",";//S_NETO del periodo //verificar
                 cadenaLinea += itemEmpleado.RFC+ ",";//RFC
-                cadenaLinea += ",";//PLANPENSION_NOMBRE
-                cadenaLinea += ",";//PLAN_FECHAINGRESO
+                cadenaLinea += ",";//NIVEL DEL AVAL
+                cadenaLinea += ",";//AGUINALDO 
+                cadenaLinea += ",";//PRIMA_V 
+                cadenaLinea += ",";//PTU 
+                cadenaLinea += ",";//FONDO_AH 
+                cadenaLinea += ",";//PRESTA_FA 
+                cadenaLinea += ",";//INCAPACIDAD
 
                 lineas.Add(cadenaLinea);
 

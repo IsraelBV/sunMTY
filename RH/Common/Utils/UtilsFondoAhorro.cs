@@ -90,21 +90,21 @@ namespace Common.Utils
             switch (idBanco)
             {
                 case 1:
-                    return "BANAMEX   ";
+                    return "BANAMEX";
                 case 2:
                     return "BANORTE S.";
                 case 3:
-                    return "BITAL     ";
+                    return "BITAL";
                 case 4:
-                    return "SERFIN    ";
+                    return "SERFIN";
                 case 5:
                     return "BBVA-BANCO";
                 case 6:
-                    return "127       ";
+                    return "127";
                 case 7:
-                    return "INBURSA   ";
+                    return "INBURSA";
                 case 8:
-                    return "BANREGIO  ";
+                    return "BANREGIO";
                 default:
                     return null;
             }

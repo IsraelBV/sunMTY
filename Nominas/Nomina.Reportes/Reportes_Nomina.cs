@@ -632,14 +632,14 @@ namespace Nomina.Reportes
                 cadenaLinea += ",";//PTU 
                 cadenaLinea += ",";//FONDO_AH 
                 cadenaLinea += ",";//PRESTA_FA 
-                cadenaLinea += ",";//INCAPACIDAD
+                cadenaLinea += "";//INCAPACIDAD
 
                 lineas.Add(cadenaLinea);
 
                 reg++;
             }
             //03, numero consecutivo, numero de lineas, sumatoria de idempleados, sumatoria sueldo mensual redondeado a2 por cada suma, una coma por cada casilla para rellenar
-            lineas.Add("03," + reg+"," + (reg-1) + "," + sumaIdempleados + "," + sumaSueldoMensual.ToString("f2") + ",,,,,,,,,,,,,,,,,,,,");
+            lineas.Add("03," + reg+"," + (reg-1) + "," + sumaIdempleados + "," + sumaSueldoMensual.ToString("f2") + ",,,,,,,,,,,,,,,,,,,,,,,,");
 
             var pathUsuario2 = Utils.ValidarFolderUsuario(idUsuario, path);
             var archivoMoper = pathUsuario2 + nombreArchivo;

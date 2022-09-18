@@ -132,6 +132,10 @@ namespace Common.Utils
         {
             switch (idEmpresaFiscal)
             {
+                case 156:// Fondo Ahorro: Empleado
+                    return "082";
+                case 157:// Fondo Ahorro: Empresa
+                    return "083";
                 case 158:// Caja de Ahorro: Ahorro Vista
                     return "001";
                 case 159://Caja de Ahorro: Ahorro a Plazo

@@ -582,7 +582,7 @@ namespace Nomina.Reportes
             var tipoNominaMoper = UtilsFondoAhorro.formaPago(periodo.IdTipoNomina);//la periodicidad del periodo para las lineas
             var tipoNominaNombreMoper = UtilsFondoAhorro.formaPagoNombreMoper(periodo.IdTipoNomina);//la periodicidad del periodo para el nombre del archivo
 
-            nombreArchivo = periodo.Fecha_Fin.ToString("yyyyMMdd") + "MP" + numeroEmpresaOdesa + tipoNominaNombreMoper + periodo.IdPeriodoPago + "FA.csv";//fa: fondo de ahorro - Ca: caja de ahorro
+            nombreArchivo = periodo.Fecha_Fin.ToString("yyyyMMdd") + "MP" + numeroEmpresaOdesa + tipoNominaNombreMoper + periodo.IdPeriodoPago + "FA.txt";//fa: fondo de ahorro - Ca: caja de ahorro
 
             int sumaIdempleados = 0;
             decimal sumaSueldoMensual = 0;
@@ -667,7 +667,7 @@ namespace Nomina.Reportes
 
                 var arrayinominasid = listaNominas.Select(x => x.IdNomina).ToArray();
 
-                int[] arrayConceptosCA = { 158, 159, 160, 161, 162 };
+                int[] arrayConceptosCA = {156, 157, 158, 159, 160, 161, 162 };
 
                 listaDetalleNominas = (from nd in context.NOM_Nomina_Detalle
                                        where arrayinominasid.Contains(nd.IdNomina) &&
@@ -694,9 +694,10 @@ namespace Nomina.Reportes
             }
             var numeroProceso = UtilsFondoAhorro.numeroProcesoCA(periodo.IdTipoNomina);
             var tipoNomina = UtilsFondoAhorro.formaPagoNombreMoper(periodo.IdTipoNomina);
-            var numeroPeriodo = periodo.NumeroPeriodoCAOdesa; // este es unico lugar en el que se usa esta calumna de la base de datos (y al momento de regsitrarlo del archivo de descuentos)
+            var numeroPeriodo = (periodo.NumeroPeriodoCAOdesa != null) ? periodo.NumeroPeriodoCAOdesa.ToString() : "aaaaccc"; // este es unico lugar en el que se usa esta calumna de la base de datos (y al momento de regsitrarlo del archivo de descuentos)
 
-            nombreArchivo = periodo.Fecha_Fin.ToString("yyyyMMdd") + "CN" + numeroEmpresaOdesa + tipoNomina + periodo.IdPeriodoPago + "CA.csv";//fa: fondo de ahorro - Ca: caja de ahorro
+            //nombreArchivo = periodo.Fecha_Fin.ToString("yyyyMMdd") + "CN" + numeroEmpresaOdesa + tipoNomina + periodo.IdPeriodoPago + "CA.txt";//fa: fondo de ahorro - Ca: caja de ahorro
+            nombreArchivo = periodo.Fecha_Fin.ToString("yyyyMMdd") + "CN" + numeroEmpresaOdesa + tipoNomina + numeroPeriodo + "CA.txt";//fa: fondo de ahorro - Ca: caja de ahorro
 
             int sumaIdempleados = 0;
             decimal sumavalorDescuento = 0;

@@ -655,6 +655,7 @@ namespace Nomina.Reportes
         public string CrearArchivoConfirmacion(string path, int idUsuario, string pathDescarga, NOM_PeriodosPago periodo)
         {
             List<NOM_Nomina_Detalle> listaDetalleNominas = new List<NOM_Nomina_Detalle>();
+            List<NOM_Nomina_Ajuste> listaAjusteNominas = new List<NOM_Nomina_Ajuste>();
             List<NOM_Nomina> listaNominas = new List<NOM_Nomina>();
             var nombreArchivo = "";
 
@@ -667,12 +668,18 @@ namespace Nomina.Reportes
 
                 var arrayinominasid = listaNominas.Select(x => x.IdNomina).ToArray();
 
-                int[] arrayConceptosCA = {156, 157, 158, 159, 160, 161, 162 };
+                int[] arrayConceptosFA = {156, 157};
+                int[] arrayConceptosCA = {158, 159, 160, 161, 162 };
 
                 listaDetalleNominas = (from nd in context.NOM_Nomina_Detalle
                                        where arrayinominasid.Contains(nd.IdNomina) &&
-                                             arrayConceptosCA.Contains(nd.IdConcepto)
+                                             arrayConceptosFA.Contains(nd.IdConcepto)
                                        select nd).ToList();
+
+                listaAjusteNominas = (from an in context.NOM_Nomina_Ajuste
+                                       where an.IdPeriodo == periodo.IdPeriodoPago &&
+                                             arrayConceptosCA.Contains(an.IdConcepto)
+                                       select an).ToList();
 
             }
             var arrayEmpresaFiscal = listaNominas.Select(x => x.IdEmpresaFiscal).Distinct().ToArray();//obtiene los id de empresas fiscales en esta nomina que deberia ser solo una
@@ -704,6 +711,7 @@ namespace Nomina.Reportes
             List<string> lineas = new List<string>();
           
             var reg = 1;//para llevar un contador en los renglones del moper
+            //los conceptos de fondo de ahorro estan en destalles de nomina
             foreach (var detalleNomina in listaDetalleNominas)
             {
                 var itemNomina = listaNominas.Where(x => x.IdNomina == detalleNomina.IdNomina).FirstOrDefault();
@@ -719,6 +727,30 @@ namespace Nomina.Reportes
                     var valorDescuento = Math.Round(detalleNomina.Total, 2);
                 cadenaLinea += valorDescuento.ToString("f2") + ",";//Valor del Movimiento
                     sumavalorDescuento += valorDescuento;//para la ultima linea
+                cadenaLinea += "0,";//Clave Movimiento Origen
+                cadenaLinea += numeroProceso + ",";//Número de Proceso
+                cadenaLinea += numeroPeriodo;//Número de Período
+
+                lineas.Add(cadenaLinea);
+
+                reg++;
+            }
+            //los conceptos de caja de ahorro entran como ajuste por lo que hay que recirrer una lista de ajustes
+            foreach (var ajusteNomina in listaAjusteNominas)
+            {
+               // var itemNomina = listaNominas.Where(x => x.IdNomina == detalleNomina.IdNomina).FirstOrDefault();
+
+                var cadenaLinea = "02,";//Tipo de Registro
+                cadenaLinea += reg.ToString() + ",";//Número de Registro
+                cadenaLinea += ajusteNomina.IdEmpleado.ToString() + ",";//Número de Socio
+                sumaIdempleados += ajusteNomina.IdEmpleado;//para la ultima linea
+                cadenaLinea += "0,";//Campo4
+                cadenaLinea += numeroEmpresaOdesa + ",";//Clave de Empresa
+                cadenaLinea += periodo.Fecha_Fin.ToString("yyyyMMdd") + ",";//Fecha Movimiento //se tomo en cuenta el fin del periodo por que es la fecha de pago
+                cadenaLinea += UtilsFondoAhorro.claveMovimientoDestinoCA(ajusteNomina.IdConcepto) + ",";//Clave Movimiento Destino
+                var valorDescuento = Math.Round(ajusteNomina.Total, 2);
+                cadenaLinea += valorDescuento.ToString("f2") + ",";//Valor del Movimiento
+                sumavalorDescuento += valorDescuento;//para la ultima linea
                 cadenaLinea += "0,";//Clave Movimiento Origen
                 cadenaLinea += numeroProceso + ",";//Número de Proceso
                 cadenaLinea += numeroPeriodo;//Número de Período

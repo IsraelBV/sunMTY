@@ -529,6 +529,245 @@ namespace Nomina.Reportes
             return folderUsuario;
         }
 
+        /// <summary>
+        /// creacionde un csv de movimiento de personal para el sistema de la empresa odesa
+        /// </summary>
+        /// <returns></returns>
+        public string CrearMoper(string path, int idUsuario, string pathDescarga, NOM_PeriodosPago periodo) {
+            
+            List<DatosBancarios> listaDatosBancarios = new List<DatosBancarios>();
+            List<Empleado> listaEmpleados = new List<Empleado>();
+            List<NOM_Nomina> listaNominas = new List<NOM_Nomina>();
+            List<Empleado_Contrato> listaContratos = new List<Empleado_Contrato>();
+            var nombreArchivo = "";
+
+            using (var context = new RHEntities())
+            {
+                listaNominas = (from nn in context.NOM_Nomina
+                                    where nn.IdPeriodo == periodo.IdPeriodoPago
+                                    select nn).ToList();
+
+                var arrayContratosId = listaNominas.Select(x => x.IdContrato).ToArray();
+
+                listaContratos = (from ec in context.Empleado_Contrato
+                                  where arrayContratosId.Contains(ec.IdContrato)
+                                  select ec).ToList();
+
+                var arrayEnpleadosId = listaContratos.Select(x => x.IdEmpleado).ToArray();
+
+                listaEmpleados = (from e in context.Empleado
+                                  where arrayEnpleadosId.Contains(e.IdEmpleado)
+                                  select e).ToList();
+
+                listaDatosBancarios = (from db in context.DatosBancarios
+                                  where arrayEnpleadosId.Contains(db.IdEmpleado)
+                                  select db).ToList();
+            }
+            var arrayEmpresaFiscal = listaContratos.Select(x => x.IdEmpresaFiscal).Distinct().ToArray();//obtiene los id de empresas fiscales en esta nomina que deberia ser solo una
+            var numeroEmpresas = arrayEmpresaFiscal.Count();
+            int idEmpresaFiscal;
+            if (numeroEmpresas > 1)
+            {
+                return null;
+            } else {
+                idEmpresaFiscal = (int)arrayEmpresaFiscal.FirstOrDefault();
+            }
+
+            var numeroEmpresaOdesa = UtilsFondoAhorro.claveEmpresa(idEmpresaFiscal);//devuelve el numero de empresa o 0 en caso de no estar en la lista
+            if (numeroEmpresas == 0)//la empresa no pertenece a las dadas de alta en osea
+            {
+                return null;
+            }
+           
+            var tipoNominaMoper = UtilsFondoAhorro.formaPago(periodo.IdTipoNomina);//la periodicidad del periodo para las lineas
+            var tipoNominaNombreMoper = UtilsFondoAhorro.formaPagoNombreMoper(periodo.IdTipoNomina);//la periodicidad del periodo para el nombre del archivo
+
+            nombreArchivo = periodo.Fecha_Fin.ToString("yyyyMMdd") + "MP" + numeroEmpresaOdesa + tipoNominaNombreMoper + periodo.IdPeriodoPago + "FA.txt";//fa: fondo de ahorro - Ca: caja de ahorro
+
+            int sumaIdempleados = 0;
+            decimal sumaSueldoMensual = 0;
+            List<string> lineas = new List<string>();
+            lineas.Add("01,REGISTRO,SOCIO,CAMPO4,EMPRESA,PLANTA,C_DEPTO,NOMBRE,PATERNO,MATERNO,F_NACIM,SEXO,E_CIVIL,I_GRUPO,I_EMPRESA,F_PAGO,T_TRAB,R_PAGO,BANCO,CUENTA_B,S_MENSUAL,RFC,NIVEL_DEL_AVAL,AGUINALDO,PRIMA_V,PTU,FONDO_AH,PRESTA_FA,INCAPACIDAD");
+
+            var reg = 1;//para llevar un contador en los renglones del moper
+            foreach (var con in listaContratos)
+            {
+                var itemEmpleado = listaEmpleados.Where(x => x.IdEmpleado == con.IdEmpleado).FirstOrDefault();
+                var itemDatoBancario = listaDatosBancarios.Where(x => x.IdEmpleado == con.IdEmpleado).FirstOrDefault();
+                var itemNomina = listaNominas.Where(x => x.IdEmpleado == con.IdEmpleado).FirstOrDefault();
+
+                var cadenaLinea = "02,";
+                cadenaLinea += reg.ToString() + ",";//REGISTRO
+                cadenaLinea += con.IdEmpleado.ToString() + ",";//SOCIO
+                    sumaIdempleados += con.IdEmpleado;//para la ultima linea
+                cadenaLinea += 0 + ",";//CAMPO4
+                cadenaLinea += numeroEmpresaOdesa + ",";//EMPRESA
+                cadenaLinea += 1 + ",";//PLANTA
+                cadenaLinea += 0 + ",";//C_DEPTO
+                cadenaLinea += itemEmpleado.Nombres + ",";//NOMBRE
+                cadenaLinea += itemEmpleado.APaterno + ",";//PATERNO
+                cadenaLinea += itemEmpleado.AMaterno + ",";//MATERNO
+                cadenaLinea += itemEmpleado.FechaNacimiento.ToString("yyyyMMdd") + ",";//F_NACIM
+                cadenaLinea += ",";//SEXO
+                cadenaLinea += ",";//E_CIVIL
+                cadenaLinea += con.FechaReal.ToString("yyyyMMdd") + ",";//I_GRUPO
+                cadenaLinea += con.FechaReal.ToString("yyyyMMdd") + ",";//I_EMPRESA
+                cadenaLinea += tipoNominaMoper + ",";//F_PAGO
+                cadenaLinea += "E,";//T_TRAB //Se usa la "E" como se recomendo por Odesa ya que en el catalogo significa empleado
+                cadenaLinea += "0,";//R_PAGO
+                cadenaLinea += "\""+UtilsFondoAhorro.claveBanco(itemDatoBancario.IdBanco) + "\",";//BANCO
+                var cuentaoclabe = (itemDatoBancario.IdBanco == 2)? itemDatoBancario.CuentaBancaria : itemDatoBancario.Clabe;
+                //var cuentaoclabe = (Int32.Parse(itemDatoBancario.CuentaBancaria) != 0)? itemDatoBancario.CuentaBancaria : itemDatoBancario.Clabe;
+                cadenaLinea += cuentaoclabe + ",";//CUENTA_B
+                var sueldoMensual = Math.Round((con.SD * 30.4M),2);
+                cadenaLinea += sueldoMensual.ToString("f2") + ",";//S_MENSUAL
+                    sumaSueldoMensual += sueldoMensual;//para la ultima linea
+                //var netoNominaDia = itemNomina.TotalNomina / itemNomina.Dias_Laborados;
+                //cadenaLinea += Math.Round((netoNominaDia * 30.4M),2).ToString("f2") + ",";//S_NETO // no es necesario siempre y cuando este el sueldo mensual
+                //cadenaLinea += itemNomina.TotalNomina + ",";//S_NETO del periodo //verificar
+                cadenaLinea += itemEmpleado.RFC+ ",";//RFC
+                cadenaLinea += ",";//NIVEL DEL AVAL
+                cadenaLinea += ",";//AGUINALDO 
+                cadenaLinea += ",";//PRIMA_V 
+                cadenaLinea += ",";//PTU 
+                cadenaLinea += ",";//FONDO_AH 
+                cadenaLinea += ",";//PRESTA_FA 
+                cadenaLinea += "";//INCAPACIDAD
+
+                lineas.Add(cadenaLinea);
+
+                reg++;
+            }
+            //03, numero consecutivo, numero de lineas, sumatoria de idempleados, sumatoria sueldo mensual redondeado a2 por cada suma, una coma por cada casilla para rellenar
+            lineas.Add("03," + reg+"," + (reg-1) + "," + sumaIdempleados + "," + sumaSueldoMensual.ToString("f2") + ",,,,,,,,,,,,,,,,,,,,,,,,");
+
+            var pathUsuario2 = Utils.ValidarFolderUsuario(idUsuario, path);
+            var archivoMoper = pathUsuario2 + nombreArchivo;
+            File.WriteAllLines(archivoMoper, lineas);
+
+            return pathDescarga + "\\" + idUsuario + "\\" + nombreArchivo;
+        }
+
+        /// <summary>
+        /// creacionde un csv de confirmacion para el sistema de la empresa odesa de caja de ahorro
+        /// </summary>
+        /// <returns></returns>
+        public string CrearArchivoConfirmacion(string path, int idUsuario, string pathDescarga, NOM_PeriodosPago periodo)
+        {
+            List<NOM_Nomina_Detalle> listaDetalleNominas = new List<NOM_Nomina_Detalle>();
+            List<NOM_Nomina_Ajuste> listaAjusteNominas = new List<NOM_Nomina_Ajuste>();
+            List<NOM_Nomina> listaNominas = new List<NOM_Nomina>();
+            var nombreArchivo = "";
+
+            using (var context = new RHEntities())
+            {
+
+                listaNominas = (from nn in context.NOM_Nomina
+                                where nn.IdPeriodo == periodo.IdPeriodoPago
+                                select nn).ToList();
+
+                var arrayinominasid = listaNominas.Select(x => x.IdNomina).ToArray();
+
+                int[] arrayConceptosFA = {156, 157};
+                int[] arrayConceptosCA = {158, 159, 160, 161, 162 };
+
+                listaDetalleNominas = (from nd in context.NOM_Nomina_Detalle
+                                       where arrayinominasid.Contains(nd.IdNomina) &&
+                                             arrayConceptosFA.Contains(nd.IdConcepto)
+                                       select nd).ToList();
+
+                listaAjusteNominas = (from an in context.NOM_Nomina_Ajuste
+                                       where an.IdPeriodo == periodo.IdPeriodoPago &&
+                                             arrayConceptosCA.Contains(an.IdConcepto)
+                                       select an).ToList();
+
+            }
+            var arrayEmpresaFiscal = listaNominas.Select(x => x.IdEmpresaFiscal).Distinct().ToArray();//obtiene los id de empresas fiscales en esta nomina que deberia ser solo una
+            var numeroEmpresas = arrayEmpresaFiscal.Count();//cuenta las empresas
+            int idEmpresaFiscal;
+            if (numeroEmpresas > 1)//si es mas de una 
+            {
+                return null;
+            }
+            else//si solo es una devuelve el id de la empresa
+            {
+                idEmpresaFiscal = (int)arrayEmpresaFiscal.FirstOrDefault();
+            }
+
+            var numeroEmpresaOdesa = UtilsFondoAhorro.claveEmpresa(idEmpresaFiscal);//devuelve el numero de empresa o 0 en caso de no estar en la lista
+            if (numeroEmpresas == 0)//la empresa no pertenece a las dadas de alta en osea
+            {
+                return null;
+            }
+            var numeroProceso = UtilsFondoAhorro.numeroProcesoCA(periodo.IdTipoNomina);
+            var tipoNomina = UtilsFondoAhorro.formaPagoNombreMoper(periodo.IdTipoNomina);
+            var numeroPeriodo = (periodo.NumeroPeriodoCAOdesa != null) ? periodo.NumeroPeriodoCAOdesa.ToString() : "aaaaccc"; // este es unico lugar en el que se usa esta calumna de la base de datos (y al momento de regsitrarlo del archivo de descuentos)
+
+            //nombreArchivo = periodo.Fecha_Fin.ToString("yyyyMMdd") + "CN" + numeroEmpresaOdesa + tipoNomina + periodo.IdPeriodoPago + "CA.txt";//fa: fondo de ahorro - Ca: caja de ahorro
+            nombreArchivo = periodo.Fecha_Fin.ToString("yyyyMMdd") + "CN" + numeroEmpresaOdesa + tipoNomina + numeroPeriodo + "CA.txt";//fa: fondo de ahorro - Ca: caja de ahorro
+
+            int sumaIdempleados = 0;
+            decimal sumavalorDescuento = 0;
+            List<string> lineas = new List<string>();
+          
+            var reg = 1;//para llevar un contador en los renglones del moper
+            //los conceptos de fondo de ahorro estan en destalles de nomina
+            foreach (var detalleNomina in listaDetalleNominas)
+            {
+                var itemNomina = listaNominas.Where(x => x.IdNomina == detalleNomina.IdNomina).FirstOrDefault();
+
+                var cadenaLinea = "02,";//Tipo de Registro
+                cadenaLinea += reg.ToString() + ",";//Número de Registro
+                cadenaLinea += itemNomina.IdEmpleado.ToString() + ",";//Número de Socio
+                    sumaIdempleados += itemNomina.IdEmpleado;//para la ultima linea
+                cadenaLinea += "0,";//Campo4
+                cadenaLinea += numeroEmpresaOdesa + ",";//Clave de Empresa
+                cadenaLinea += periodo.Fecha_Fin.ToString("yyyyMMdd") + ",";//Fecha Movimiento //se tomo en cuenta el fin del periodo por que es la fecha de pago
+                cadenaLinea += UtilsFondoAhorro.claveMovimientoDestinoCA(detalleNomina.IdConcepto) + ",";//Clave Movimiento Destino
+                    var valorDescuento = Math.Round(detalleNomina.Total, 2);
+                cadenaLinea += valorDescuento.ToString("f2") + ",";//Valor del Movimiento
+                    sumavalorDescuento += valorDescuento;//para la ultima linea
+                cadenaLinea += "0,";//Clave Movimiento Origen
+                cadenaLinea += numeroProceso + ",";//Número de Proceso
+                cadenaLinea += numeroPeriodo;//Número de Período
+
+                lineas.Add(cadenaLinea);
+
+                reg++;
+            }
+            //los conceptos de caja de ahorro entran como ajuste por lo que hay que recirrer una lista de ajustes
+            foreach (var ajusteNomina in listaAjusteNominas)
+            {
+               // var itemNomina = listaNominas.Where(x => x.IdNomina == detalleNomina.IdNomina).FirstOrDefault();
+
+                var cadenaLinea = "02,";//Tipo de Registro
+                cadenaLinea += reg.ToString() + ",";//Número de Registro
+                cadenaLinea += ajusteNomina.IdEmpleado.ToString() + ",";//Número de Socio
+                sumaIdempleados += ajusteNomina.IdEmpleado;//para la ultima linea
+                cadenaLinea += "0,";//Campo4
+                cadenaLinea += numeroEmpresaOdesa + ",";//Clave de Empresa
+                cadenaLinea += periodo.Fecha_Fin.ToString("yyyyMMdd") + ",";//Fecha Movimiento //se tomo en cuenta el fin del periodo por que es la fecha de pago
+                cadenaLinea += UtilsFondoAhorro.claveMovimientoDestinoCA(ajusteNomina.IdConcepto) + ",";//Clave Movimiento Destino
+                var valorDescuento = Math.Round(ajusteNomina.Total, 2);
+                cadenaLinea += valorDescuento.ToString("f2") + ",";//Valor del Movimiento
+                sumavalorDescuento += valorDescuento;//para la ultima linea
+                cadenaLinea += "0,";//Clave Movimiento Origen
+                cadenaLinea += numeroProceso + ",";//Número de Proceso
+                cadenaLinea += numeroPeriodo;//Número de Período
+
+                lineas.Add(cadenaLinea);
+
+                reg++;
+            }
+            //03, numero consecutivo, numero de lineas, sumatoria de idempleados, sumatoria sueldo mensual redondeado a2 por cada suma, una coma por cada casilla para rellenar
+            lineas.Add("03," + reg + "," + (reg - 1) + "," + sumaIdempleados + "," + sumavalorDescuento.ToString("f2") + ",,,,,,");
+
+            var pathUsuario2 = Utils.ValidarFolderUsuario(idUsuario, path);
+            var archivoMoper = pathUsuario2 + nombreArchivo;
+            File.WriteAllLines(archivoMoper, lineas);
+
+            return pathDescarga + "\\" + idUsuario + "\\" + nombreArchivo;
+        }
     }
     public class DatosReporteNominas
     {

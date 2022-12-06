@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
@@ -194,6 +195,108 @@ namespace Nomina.BLL
             InsertarRegistrosDeAjuste(listaDeAjustes);
 
         }
+
+        public void ImportarDatosArchivoDescuento(StreamReader file, int idPeriodo)
+        {
+            if (file == StreamReader.Null || idPeriodo <= 0) return;
+
+            List<NOM_Nomina_Ajuste> listaDeAjustes = new List<NOM_Nomina_Ajuste>();
+            List<int> listaNumeroPeriodo = new List<int>();
+            string linea;
+
+            int idEmpleado = 0;
+            decimal total = 0;
+            int idConcepto = 0;
+            decimal gravado = 0;
+            decimal excento = 0;
+            decimal integraimss = 0;
+            decimal impuestosn = 0;
+
+            var idEmpArray = GetIdEmpleadosByIdPeriodo(idPeriodo);
+
+            while ((linea = file.ReadLine()) != null)
+            {
+
+                idEmpleado = 0;
+                total = 0;
+                idConcepto = 0;
+                gravado = 0;
+                excento = 0;
+                integraimss = 0;
+                impuestosn = 0;
+
+                var arrayLinea = linea.Split(',');
+
+                if(arrayLinea[0] == "02") { 
+
+                    //valida la columna id empleado
+                    if (arrayLinea[2].ToString().Trim() == "") continue;
+                    int.TryParse(arrayLinea[2].ToString(), out idEmpleado);
+                    if (idEmpleado <= 0) continue;
+
+                    //Valida columna concepto
+                    var claveMovimiento = UtilsFondoAhorro.claveMovimientoArchivoDescuentoCA(arrayLinea[3]);
+                    if (claveMovimiento.ToString().Trim() == "") continue;
+
+                    var concepto = claveMovimiento.ToString();
+
+                    int.TryParse(claveMovimiento, out idConcepto);
+
+                    if (idConcepto <= 0) continue;
+
+                    //Validar total
+                    if (arrayLinea[4].ToString().Trim() == "") continue;
+
+                    total = decimal.Parse(arrayLinea[4].ToString())/100;//en el archivo de descuento viene *100
+                    gravado = decimal.Parse("0.00");
+                    excento = decimal.Parse(arrayLinea[4].ToString())/100;//es deduccion y para que coincida la suma de excento y gravado lo pongo todo como excento
+
+                    decimal intimss = 0;
+                    decimal.TryParse("0.00", out intimss);
+                    integraimss = intimss;
+
+                    decimal varisn = 0;
+                    decimal.TryParse("0.00", out varisn);
+                    impuestosn = varisn;
+
+                    //Buscamos que el idEmpleado este en el array
+                    if (!BuscarInArray(idEmpArray, idEmpleado)) continue;
+
+                    //Validamos que el total sea igual a la suma del gravado mas exento
+                    if (total != (gravado + excento)) continue;
+
+                    listaNumeroPeriodo.Add(int.Parse(arrayLinea[8]));// para guardar los periodos de odesa y luego evaluarlos
+
+                    NOM_Nomina_Ajuste itemAsimilados = new NOM_Nomina_Ajuste()
+                    {
+                        IdAjuste = 0,
+                        IdPeriodo = idPeriodo,
+                        IdEmpleado = idEmpleado,
+                        IdConcepto = idConcepto,
+                        Total = total,
+                        GravadoIsr = gravado,
+                        ExentoIsr = excento,
+                        IntegraImss = integraimss,
+                        ImpuestoSobreNomina = impuestosn,
+                        FechaReg = DateTime.Now
+                    };
+
+                    listaDeAjustes.Add(itemAsimilados);
+                }
+            }
+
+            int[] arrayIdEmpleados = listaDeAjustes.Select(x => x.IdEmpleado).ToArray();
+
+            //agregar el numero de periodo de Odesa al periodo de el sistema
+
+            var arryaNumeroPeriodoDist = listaNumeroPeriodo.Distinct().ToArray();
+            if (arryaNumeroPeriodoDist.Count() > 1) return;//debe ser un solo numero de periodo
+            //agregar el numero de periodo de la Caja De ahorro de Odesa
+            InsertarNumeroPeriodoCA(idPeriodo, arryaNumeroPeriodoDist[0]);
+            //Agregar el dato nuevo
+            InsertarRegistrosDeAjuste(listaDeAjustes);
+
+        }
         private int[] GetIdEmpleadosByIdPeriodo(int idPeriodoPago)
         {
             using (var context = new RHEntities())
@@ -369,6 +472,17 @@ namespace Nomina.BLL
                 {
                     ws.Cell(row, column).DataValidation.List(range);
                 }
+            }
+        }
+
+        private void InsertarNumeroPeriodoCA(int idPeriodo, int numeroperiodoCA)
+        {
+            using (var context = new RHEntities())
+            {
+                var periodo = context.NOM_PeriodosPago.FirstOrDefault(x => x.IdPeriodoPago == idPeriodo);
+
+                periodo.NumeroPeriodoCAOdesa = numeroperiodoCA;
+                context.SaveChanges();
             }
         }
 

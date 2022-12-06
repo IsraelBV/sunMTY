@@ -131,5 +131,48 @@ namespace Nomina.WEB.Controllers
 
             return Json(new { status = "OK - Se ejecuto el proceso de eliminacion" }, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpPost]
+        public JsonResult UploadArchivoDescuentosCA(HttpPostedFileBase file)
+        {
+            
+            int idPeriodo = 0;
+            //Validar que el file no este vacio o null
+            if (file != null)
+            {
+                try
+                {
+                    var periodoPago = Session["periodo"] as NOM_PeriodosPago;
+                    idPeriodo = periodoPago.IdPeriodoPago;
+
+                    PeriodosPago ctx = new PeriodosPago();
+                    var periodoActualizado = ctx.GetPeriodoPagoById(periodoPago.IdPeriodoPago);
+
+
+                    if (periodoActualizado.Autorizado)
+                    {
+                        return Json(new { error = "ERROR: No se puede subir datos a un periodo Autorizado" }, JsonRequestBehavior.AllowGet);
+                    }
+
+                    System.IO.StreamReader Reader = new System.IO.StreamReader(file.InputStream);
+                    //Validar que sea el formato correcto
+
+                    if (!file.FileName.EndsWith(".txt") && !file.FileName.EndsWith(".csv"))
+                    {
+                        return Json(new { error = "ERROR: El archivo no tiene el formato correcto" }, JsonRequestBehavior.AllowGet);
+                    }
+
+                    DatoAjustesNomina da = new DatoAjustesNomina();
+                    da.ImportarDatosArchivoDescuento(Reader, periodoPago.IdPeriodoPago);
+                }
+                catch (Exception ex)
+                {
+                    return Json(new { error = "ERROR: El archivo no contiene datos correctos o esta dañado." }, JsonRequestBehavior.AllowGet);
+                }
+
+            }
+            //filebatchuploadsuccess
+            return Json(new { fileuploaded = "agregado", filebatchuploadsuccess = "Batch success" }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

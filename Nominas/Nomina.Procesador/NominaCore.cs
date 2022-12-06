@@ -665,6 +665,7 @@ namespace Nomina.Procesador
                         NOM_Nomina_Detalle itemDetalenomina = new NOM_Nomina_Detalle();
                         List<NOM_Nomina_Detalle> listaFonacot = new List<NOM_Nomina_Detalle>();
                         List<NOM_Nomina_Detalle> listaInfonavit = new List<NOM_Nomina_Detalle>();
+                        List<NOM_Nomina_Detalle> listaFondoAhorro = new List<NOM_Nomina_Detalle>();
                         //por cada concepto en la lista se realiza el cálculo 
                         //ordenar los conceptos por idConcepto desc
                         decimal vacacionesTotal = 0;
@@ -733,7 +734,7 @@ namespace Nomina.Procesador
 
                                         if (conceptoEmpleado.IdConcepto == 52)//FONACOT
                                         {
-                                            listaFonacot = CalcularConceptoListaASync(itemNomina, ppago, zonaSalarial.SMG, false, 0, conceptoEmpleado.IdConcepto);
+                                            listaFonacot = CalcularConceptoListaASync(itemNomina, ppago, zonaSalarial.SMG, zonaSalarial.UMA, false, 0, conceptoEmpleado.IdConcepto);
 
                                             if (listaFonacot == null) continue;
 
@@ -741,9 +742,9 @@ namespace Nomina.Procesador
 
                                             listaDetalleNomina.AddRange(listaFonacot);
                                         }
-                                        if (conceptoEmpleado.IdConcepto == 51)//INFONAVIT
+                                        else if (conceptoEmpleado.IdConcepto == 51)//INFONAVIT
                                         {
-                                            listaInfonavit = CalcularConceptoListaASync(itemNomina, ppago, zonaSalarial.SMG, false, 0, conceptoEmpleado.IdConcepto, diasDescuentoInfonavit: diasDescInfonavit);
+                                            listaInfonavit = CalcularConceptoListaASync(itemNomina, ppago, zonaSalarial.SMG, zonaSalarial.UMA, false, 0, conceptoEmpleado.IdConcepto, diasDescuentoInfonavit: diasDescInfonavit);
 
                                             if (listaInfonavit == null) continue;
 
@@ -752,9 +753,18 @@ namespace Nomina.Procesador
                                             listaDetalleNomina.AddRange(listaInfonavit);
 
                                         }
+                                        else if (conceptoEmpleado.IdConcepto == 156) //FONDO DE AHORRO
+                                        {
+                                            listaFondoAhorro = CalcularConceptoListaASync(itemNomina, ppago, zonaSalarial.SMG, zonaSalarial.UMA, false, 0, conceptoEmpleado.IdConcepto);
+
+                                            if (listaFondoAhorro == null) continue;
+                                            if (listaFondoAhorro.Count <= 0) continue;
+
+                                            listaDetalleNomina.AddRange(listaFondoAhorro);
+                                        }
                                         else if (conceptoEmpleado.IdConcepto == 14) //HORAS EXTRAS
                                         {
-                                            var listaHorasExtras = CalcularConceptoListaASync(itemNomina, ppago, zonaSalarial.SMG, false, 0, conceptoEmpleado.IdConcepto);
+                                            var listaHorasExtras = CalcularConceptoListaASync(itemNomina, ppago, zonaSalarial.SMG, zonaSalarial.UMA, false, 0, conceptoEmpleado.IdConcepto);
 
                                             if (listaHorasExtras == null) continue;
                                             if (listaHorasExtras.Count <= 0) continue;
@@ -846,6 +856,24 @@ namespace Nomina.Procesador
                                                     }
                                                 }
                                             }
+                                            else if (conceptoEmpleado.IdConcepto == 156)//fondo ahorro
+                                            {
+                                                if (listaFondoAhorro != null)
+                                                {
+                                                    if (listaFondoAhorro.Count > 0)
+                                                    {
+
+                                                        var itemFondoAhorro = listaFondoAhorro.FirstOrDefault(x => x.IdConcepto == 156);
+                                                        var sumaFondoAhorro = itemFondoAhorro.Total;
+                                                        totalDeducciones += sumaFondoAhorro;
+
+                                                    }
+                                                }
+                                            }
+                                            //else if (conceptoEmpleado.IdConcepto == 158)//caja ahorro
+                                            //{
+                                            //    totalDeducciones += itemDetalenomina.Total;
+                                            //}
                                             else
                                             {
                                                 totalDeducciones += itemDetalenomina.Total;
@@ -1303,14 +1331,18 @@ namespace Nomina.Procesador
                     return MPercepciones.Vacaciones(itemNomina, diasVacaciones, isPorcentajeSobreNomina, porcentajeSobreNomina);
                 case 16://Prima Vacacional
                     return MPercepciones.PrimaVacaciones(itemNomina, totalVacaciones, smg, isPorcentajeSobreNomina, porcentajeSobreNomina);
+                //case 158://Caja de ahorro
+                //    return MDeducciones.CajaDeAhorro(itemNomina);
                 default:
                     return null;
             }
         }
 
         private static List<NOM_Nomina_Detalle> CalcularConceptoListaASync(NOM_Nomina itemNomina, NOM_PeriodosPago periodoPago,
-            decimal salarioMin, bool isPorcentajeSobreNomina, decimal porcentajeSobreNomina, int idConcepto, int diasDescuentoInfonavit = -1)
+            decimal salarioMin, decimal UMA , bool isPorcentajeSobreNomina, decimal porcentajeSobreNomina, int idConcepto, int diasDescuentoInfonavit = -1)
         {
+
+            int tipoPeriodo = periodoPago.IdTipoNomina;
             switch (idConcepto)
             {
                 case 52:
@@ -1319,6 +1351,8 @@ namespace Nomina.Procesador
                     return MPercepciones.HorasExtras(itemNomina, salarioMin, periodoPago, isPorcentajeSobreNomina, porcentajeSobreNomina);
                 case 51:
                     return MDeducciones.PrestamoInfonavit(itemNomina, periodoPago, diasDescuentoInfonavit);
+                case 156://Fondo de ahorro
+                    return MDeducciones.FondoDeAhorro(itemNomina, tipoPeriodo, UMA);
                 default:
                     return null;
             }

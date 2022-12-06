@@ -628,7 +628,7 @@ namespace RH.WEB.Controllers
         public ActionResult Cambiosalario(int idContrato, DateTime Fechainicio, decimal SalarioReal = 0, decimal SD = 0, decimal SDI = 0)
         {
             var idUsuario = SessionHelpers.GetIdUsuario();
-            var response = ctx.Cambiosalario(idUsuario, idContrato, Fechainicio, Math.Round(SalarioReal, 4), Math.Round(SD, 4), Math.Round(SDI, 4));
+            var response = ctx.Cambiosalario(idUsuario, idContrato, Fechainicio, 0,Math.Round(SalarioReal, 4), Math.Round(SD, 4), Math.Round(SDI, 4));//13-05-2021// se agrego un cero al factor ya que tomama el salario real como factor y en el metodo no se utiliza de todos modos
             return Json(idUsuario, JsonRequestBehavior.AllowGet);
         }
 

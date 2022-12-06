@@ -9,6 +9,8 @@ using System.Web;
 using Novacode;
 using Common.Utils;
 using SYA.BLL;
+using System.Globalization;
+
 namespace RH.BLL
 {
     public class Plantillas
@@ -356,10 +358,14 @@ namespace RH.BLL
                         var puesto = ps.GetPuesto(contrato.IdPuesto);
                         document.ReplaceText("<<Empleado_Puesto>>", puesto.Descripcion);
                     }
+                    document.ReplaceText("<<Empleado_SalarioDiarioIntegrado>>", contrato.SDI.ToString());//para contrato de tiempo determinado
+                    document.ReplaceText("<<Empleado_SalarioDiarioIntegradoLetras>>", Utils.ConvertCantidadALetras(contrato.SDI.ToString()));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_SalarioDiario>>", contrato.SD.ToString());
                     document.ReplaceText("<<Empleado_SalarioDiarioLetras>>", Utils.ConvertCantidadALetras(contrato.SD.ToString()));
-                    var periocidad = _ctx.C_PeriodicidadPago_SAT.Where(x => x.IdPeriodicidadPago == contrato.IdPeriodicidadPago).Select(x => x.Descripcion).FirstOrDefault();
+                    var periocidad = _ctx.C_PeriodicidadPago_SAT.Where(x => x.IdPeriodicidadPago == contrato.IdPeriodicidadPago).Select(x => x.Descripcion).FirstOrDefault().ToLower();
+                    periocidad += "es";
                     document.ReplaceText("<<Empleado_TipoDeNomina>>", periocidad);
+                    document.ReplaceText("<<Empleado_sexo>>", empleado.Sexo);
 
                     if (cuentab != null)
                     {
@@ -368,9 +374,16 @@ namespace RH.BLL
                     document.ReplaceText("<<Empleado_BancoDeCuenta>>", descripcionb);
                     document.ReplaceText("<<Empleado_FechaAntiguedad>>", contrato.FechaReal.ToString("dd-MM-yyyy"));
                     document.ReplaceText("<<Empleado_FechaAltaIMSS>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("dd-MM-yyyy"));
+                    document.ReplaceText("<<Empleado_FechaAltaIMSSMes>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("MMMM", CultureInfo.CreateSpecificCulture("es")));//para contrato de tiempo determinado
+                    document.ReplaceText("<<Empleado_FechaAltaIMSSDia>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("dd"));//para contrato de tiempo determinado
+                    document.ReplaceText("<<Empleado_FechaAltaIMSSAno>>", contrato.FechaIMSS == null ?"sin fecha":contrato.FechaIMSS.Value.ToString("yyyy"));//para contrato de tiempo determinado
                     document.ReplaceText("<<Empleado_DiasDeContrato>>", contrato.DiasContrato.ToString());
-                    document.ReplaceText("<<Empleado_VenceContrato>>", contrato.Vigencia.ToString());
-                   
+                    document.ReplaceText("<<Empleado_VenceContrato>>", contrato.Vigencia == null ? "sin fecha" : contrato.Vigencia.Value.ToString("dd-MM-yyyy"));
+                    document.ReplaceText("<<Empleado_VenceContratoDia>>", contrato.Vigencia == null ? "sin fecha" : contrato.Vigencia.Value.ToString("dd"));
+                    document.ReplaceText("<<Empleado_VenceContratoMes>>", contrato.Vigencia == null ? "sin fecha" : contrato.Vigencia.Value.ToString("MMMM", CultureInfo.CreateSpecificCulture("es")));
+                    document.ReplaceText("<<Empleado_VenceContratoAno>>", contrato.Vigencia == null ? "sin fecha" : contrato.Vigencia.Value.ToString("yyyy", CultureInfo.CreateSpecificCulture("es")));
+
+
                     document.SaveAs(newDoc);
                 }
             }

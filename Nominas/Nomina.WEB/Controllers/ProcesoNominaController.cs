@@ -494,5 +494,38 @@ namespace Nomina.WEB.Controllers
 
             return Json(new { result = "OK - Aguinaldo" }, JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult Moper() {
+
+            var archivoReporte = "";
+            int idUsuario = SessionHelpers.GetIdUsuario();
+
+            var ruta = Server.MapPath("~/Files/Moper/");
+            var pathDescarga = "/Files/Moper/";
+            var periodo = Session["periodo"] as NOM_PeriodosPago;
+
+            Reportes.Reportes_Nomina rep = new Reportes.Reportes_Nomina();
+            archivoReporte = rep.CrearMoper(ruta, idUsuario, pathDescarga, periodo);
+            string[] arrayRuta = archivoReporte.Split('\\');
+            string nombre = arrayRuta[arrayRuta.Length - 1];
+            return Json(new { success = true, error = "", name = nombre, resultPath = archivoReporte }, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult ArchivoConfirmacion()
+        {
+
+            var archivoReporte = "";
+            int idUsuario = SessionHelpers.GetIdUsuario();
+
+            var ruta = Server.MapPath("~/Files/ArchivoConfirmacion/");
+            var pathDescarga = "/Files/ArchivoConfirmacion/";
+            var periodo = Session["periodo"] as NOM_PeriodosPago;
+
+            Reportes.Reportes_Nomina rep = new Reportes.Reportes_Nomina();
+            archivoReporte = rep.CrearArchivoConfirmacion(ruta, idUsuario, pathDescarga, periodo);
+            string[] arrayRuta = archivoReporte.Split('\\');
+            string nombre = arrayRuta[arrayRuta.Length - 1];
+            return Json(new { success = true, error = "", name = nombre, resultPath = archivoReporte }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

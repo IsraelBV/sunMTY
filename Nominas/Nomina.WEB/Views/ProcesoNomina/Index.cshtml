@@ -812,6 +812,64 @@
                         }
                     },
                     {
+                        className: 'btnMoper',
+                        text: 'MOPER',
+                        action: function () {
+
+                            var request = $.ajax({
+                                url: "/ProcesoNomina/Moper/",
+                                contentType: 'application/json; charset=utf-8',
+                                datatype: 'json',
+                                method: "POST",
+
+                                beforeSend: function () {
+                                    waitingDialog.show('Generando MOPER......');
+
+                                }
+                            });
+                            request.done(function (data) {
+                                waitingDialog.hide();
+                                //utils.loadMainPage("Incidencias", "Index", "#main-content", "false", null);
+                                //window.location = "/ProcesoNomina/descargarPlantilla?ruta=" + data;
+                                if (data.success) {
+                                    bajarTXT(data.resultPath, data.name);
+
+                                } else {
+                                    utils.showMessage("WARn", data.error, 4000, "danger");
+                                }
+                            });
+                        }
+                    },
+                    {
+                        className: 'btnAconfirmacionr',
+                        text: 'A. CONFIRMACION',
+                        action: function () {
+
+                            var request = $.ajax({
+                                url: "/ProcesoNomina/ArchivoConfirmacion/",
+                                contentType: 'application/json; charset=utf-8',
+                                datatype: 'json',
+                                method: "POST",
+
+                                beforeSend: function () {
+                                    waitingDialog.show('Generando Archivo De Confirmacion......');
+
+                                }
+                            });
+                            request.done(function (data) {
+                                waitingDialog.hide();
+                                //utils.loadMainPage("Incidencias", "Index", "#main-content", "false", null);
+                                //window.location = "/ProcesoNomina/descargarPlantilla?ruta=" + data;
+                                if (data.success) {
+                                    bajarTXT(data.resultPath, data.name);
+
+                                } else {
+                                    utils.showMessage("WARn", data.error, 4000, "danger");
+                                }
+                            });
+                        }
+                    },
+                    {
                         className: 'btnsummary',
                         text: textSum,
                         action: function() {

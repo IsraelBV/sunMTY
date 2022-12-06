@@ -41,8 +41,8 @@ namespace Nomina.Reportes
             {
                 finiquito = context.NOM_Finiquito.FirstOrDefault(x => x.IdPeriodo == pperiodo.IdPeriodoPago);
                 empleado = context.Empleado.FirstOrDefault(x => x.IdEmpleado == finiquito.IdEmpleado);
-                //var empleadoC = ctx.Empleado_Contrato.Where(x => x.IdEmpleado == empleado.IdEmpleado && x.Status == true).FirstOrDefault();
-                empleadoC = context.Empleado_Contrato.FirstOrDefault(x => x.IdEmpleado == empleado.IdEmpleado);
+                //empleadoC = ctx.Empleado_Contrato.Where(x => x.IdEmpleado == empleado.IdEmpleado && x.Status == true).FirstOrDefault();
+                empleadoC = context.Empleado_Contrato.Where(x => x.IdEmpleado == empleado.IdEmpleado).OrderByDescending(x => x.IdContrato).FirstOrDefault();
 
 
                 empresaF =

@@ -421,24 +421,27 @@ namespace Nomina.Procesador.Metodos
 
         private static List<NOM_Nomina_Detalle> CalculoFondoDeAhorro(NOM_Nomina nomina, int tipoPeriodo, decimal UMA) {
             List<NOM_Nomina_Detalle> listaFondoAhorro = new List<NOM_Nomina_Detalle>();
-            decimal UmaAnual = ((UMA * 1.3M) * 365);
+            
+            decimal UmaMensual = Math.Round((UMA * 30.4M),2);
+            decimal topeMensual = UmaMensual * 1.3M;
+            decimal topeAnual = (topeMensual * 12);
             int diasLaborados = nomina.Dias_Laborados;
             decimal topePeriodo = 0;
             decimal sd = nomina.SD;
-            decimal FactorPocentajeFondoAhorro = 0.06M;
+            decimal FactorPocentajeFondoAhorro = 0.05M;
             decimal total;
-
+            
             if (tipoPeriodo == 2)
             { //semanal
-                topePeriodo = UmaAnual / 52;
+                topePeriodo = topeAnual / 52;
             }
             else if (tipoPeriodo == 4)
             { //quincenal
-                topePeriodo = UmaAnual / 24;
+                topePeriodo = topeAnual / 24;
             }
             else if (tipoPeriodo == 5)
             { //mensual
-                topePeriodo = UmaAnual / 12;
+                topePeriodo = topeMensual;
             }
 
             var cantidadCaja = (sd * FactorPocentajeFondoAhorro) * diasLaborados;

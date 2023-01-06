@@ -154,7 +154,7 @@ namespace Nomina.Procesador
             //Validar los archivos fisicos, aunque puede ser antes de este metodo
 
             //Generar los bytes de certificados y reader del xslt
-            var pathCadenaOriginalXslt = pathCertificados + "\\" + "cadenaoriginal_3_3_L.xslt";
+            var pathCadenaOriginalXslt = pathCertificados + "\\" + "cadenaoriginal_4_0_L.xslt";
             //XmlReader readerXsltCadenaOriginal;//XmlReader.Create(File.OpenRead(pathCadenaOriginalXslt));
             //eaderXsltCadenaOriginal = XmlReader.Create(File.OpenRead(pathCadenaOriginalXslt));
 
@@ -614,7 +614,7 @@ XslCompiledTransform transformador,
                 comprobante33.TipoDeComprobante = Modelos.Cfdi33.c_TipoDeComprobante.N;//Tipo Nomina
                 comprobante33.MetodoPago = Modelos.Cfdi33.c_MetodoPago.PUE; //Pago en una sola excibicion
                 comprobante33.MetodoPagoSpecified = true;
-
+                comprobante33.Exportacion = "01";// 01, asi lo marca la guia de llenado
 
                 comprobante33.LugarExpedicion = emisorDatos.CP; //codigo postal del cat del sat  [0-9]{5}
                 comprobante33.schemaLocation = "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/nomina12 http://www.sat.gob.mx/sitio_internet/cfd/nomina/nomina12.xsd";// http://www.sat.gob.mx/informacion_fiscal/factura_electronica/Documents/Complementoscfdi/nomina12.xsd";
@@ -704,10 +704,13 @@ XslCompiledTransform transformador,
                 Modelos.Cfdi33.ComprobanteReceptor comprobanteReceptor33 = new Modelos.Cfdi33.ComprobanteReceptor()
                 {
                     //ABC 4 - 3.3
-                  Rfc = datosReceptor.RFC,
+                    Rfc = datosReceptor.RFC,
                     //Rfc = "AAQM610917QJA",
-                    Nombre = ($"{datosReceptor.APaterno} {datosReceptor.AMaterno} {datosReceptor.Nombres}"),
-                    UsoCFDI = c_UsoCFDI.P01 //Por definir
+                    Nombre = ($"{datosReceptor.Nombres} {datosReceptor.APaterno} {datosReceptor.AMaterno}"),
+                    DomicilioFiscalReceptor = datosReceptor.CP,
+                    regimenFiscalReceptor = Modelos.Cfdi33.c_RegimenFiscal.Item605, //Sueldos y Salarios e Ingresos Asimilados a Salarios
+                    UsoCFDI = c_UsoCFDI.CN01 //Nomina
+
                 };
 
                 comprobante33.Receptor = comprobanteReceptor33;
@@ -727,7 +730,8 @@ XslCompiledTransform transformador,
                     ValorUnitario = subtotal,
                     Importe = subtotal,
                     Descuento = descuento,//Puede ser <= al Importe
-                    DescuentoSpecified = descuento > 0 ? true : false // este lo comente porque en la validacion del pac pedia que venga el campo aunque sea cero
+                    DescuentoSpecified = descuento > 0 ? true : false, // este lo comente porque en la validacion del pac pedia que venga el campo aunque sea cero
+                    ObjetoImp = 01 //01 asi lo pide la guai de llenado
 
                 };
 
@@ -839,7 +843,7 @@ XslCompiledTransform transformador,
                 NOM_CFDI_Timbrado registro = new NOM_CFDI_Timbrado
                 {
                     IdTimbrado = 0,
-                    Version = "3.3",
+                    Version = "4.0",
                     Serie = "A",
                     Folio = 0,
                     IdNomina = datosNomina.IdNomina,

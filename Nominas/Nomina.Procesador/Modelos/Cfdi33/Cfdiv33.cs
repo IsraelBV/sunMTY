@@ -76,11 +76,13 @@ namespace Nomina.Procesador.Modelos.Cfdi33
 
         private string confirmacionField;
 
+        private string exportacionField;
+
         private string schemaLocationFieldSpecified;
 
         public Comprobante()
         {
-            this.versionField = "3.3";
+            this.versionField = "4.0";
         }
 
         /// <comentarios/>
@@ -316,6 +318,14 @@ namespace Nomina.Procesador.Modelos.Cfdi33
         {
             get { return this.confirmacionField; }
             set { this.confirmacionField = value; }
+        }
+
+        /// <comentarios/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Exportacion
+        {
+            get { return this.exportacionField; }
+            set { this.exportacionField = value; }
         }
 
         /// <comentarios/>
@@ -558,6 +568,10 @@ namespace Nomina.Procesador.Modelos.Cfdi33
 
         private string nombreField;
 
+        private string domicilioFiscalReceptorField;
+
+        private c_RegimenFiscal regimenFiscalReceptorField;
+
         private string residenciaFiscalField; //c_pais
 
         private bool residenciaFiscalFieldSpecified;
@@ -580,6 +594,24 @@ namespace Nomina.Procesador.Modelos.Cfdi33
         {
             get { return this.nombreField; }
             set { this.nombreField = value; }
+        }
+
+        /// <comentarios/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string DomicilioFiscalReceptor
+        {
+            //c_Pais
+            get { return this.domicilioFiscalReceptorField; }
+            set { this.domicilioFiscalReceptorField = value; }
+        }
+
+        /// <comentarios/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public c_RegimenFiscal regimenFiscalReceptor
+        {
+            //c_Pais
+            get { return this.regimenFiscalReceptorField; }
+            set { this.regimenFiscalReceptorField = value; }
         }
 
         /// <comentarios/>
@@ -689,7 +721,13 @@ namespace Nomina.Procesador.Modelos.Cfdi33
         D10,
 
         /// <comentarios/>
-        P01,
+        S01,
+
+        /// <comentarios/>
+        CP01,
+
+        /// <comentarios/>
+        CN01,
     }
 
     /// <comentarios/>
@@ -730,6 +768,8 @@ namespace Nomina.Procesador.Modelos.Cfdi33
         private decimal descuentoField;
 
         private bool descuentoFieldSpecified;
+
+        private int objetoImpField;
 
         /// <comentarios/>
         public ComprobanteConceptoImpuestos Impuestos
@@ -840,6 +880,14 @@ namespace Nomina.Procesador.Modelos.Cfdi33
         {
             get { return this.descuentoField; }
             set { this.descuentoField = value; }
+        }
+
+        /// <comentarios/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int ObjetoImp
+        {
+            get { return this.objetoImpField; }
+            set { this.objetoImpField = value; }
         }
 
         /// <comentarios/>

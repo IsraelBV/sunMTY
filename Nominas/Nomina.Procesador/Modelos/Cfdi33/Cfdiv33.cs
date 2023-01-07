@@ -769,7 +769,7 @@ namespace Nomina.Procesador.Modelos.Cfdi33
 
         private bool descuentoFieldSpecified;
 
-        private int objetoImpField;
+        private string objetoImpField;
 
         /// <comentarios/>
         public ComprobanteConceptoImpuestos Impuestos
@@ -884,7 +884,7 @@ namespace Nomina.Procesador.Modelos.Cfdi33
 
         /// <comentarios/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int ObjetoImp
+        public string ObjetoImp
         {
             get { return this.objetoImpField; }
             set { this.objetoImpField = value; }

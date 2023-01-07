@@ -731,7 +731,7 @@ XslCompiledTransform transformador,
                     Importe = subtotal,
                     Descuento = descuento,//Puede ser <= al Importe
                     DescuentoSpecified = descuento > 0 ? true : false, // este lo comente porque en la validacion del pac pedia que venga el campo aunque sea cero
-                    ObjetoImp = 01 //01 asi lo pide la guai de llenado
+                    ObjetoImp = "01" //01 asi lo pide la guai de llenado
 
                 };
 

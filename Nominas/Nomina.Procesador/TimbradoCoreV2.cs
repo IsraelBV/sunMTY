@@ -602,8 +602,8 @@ XslCompiledTransform transformador,
                 comprobante33.Folio = isFiniquito ? datosNomina.IdFiniquito.ToString() : datosNomina.IdNomina.ToString();
                 comprobante33.Fecha = now;
                 comprobante33.Sello = "sello"; //<-- no quitar este texto ni cambiarlo por otro
-                comprobante33.FormaPago = Modelos.Cfdi33.c_FormaPago.Item99;// 99 por definir  
-                comprobante33.FormaPagoSpecified = true;
+                //comprobante33.FormaPago = Modelos.Cfdi33.c_FormaPago.Item99;// 99 por definir  
+                //comprobante33.FormaPagoSpecified = true;
 
                 //comprobante33.CondicionesDePago = "3 Meses";//Segun la guía este campo no debe de existir
                 comprobante33.SubTotal = (decimal)0.00;

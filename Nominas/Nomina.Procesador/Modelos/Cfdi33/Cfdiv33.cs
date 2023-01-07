@@ -607,7 +607,7 @@ namespace Nomina.Procesador.Modelos.Cfdi33
 
         /// <comentarios/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public c_RegimenFiscal regimenFiscalReceptor
+        public c_RegimenFiscal RegimenFiscalReceptor
         {
             //c_Pais
             get { return this.regimenFiscalReceptorField; }

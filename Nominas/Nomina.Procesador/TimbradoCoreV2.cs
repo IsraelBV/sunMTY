@@ -708,7 +708,7 @@ XslCompiledTransform transformador,
                     //Rfc = "AAQM610917QJA",
                     Nombre = ($"{datosReceptor.Nombres} {datosReceptor.APaterno} {datosReceptor.AMaterno}"),
                     DomicilioFiscalReceptor = datosReceptor.CP,
-                    regimenFiscalReceptor = Modelos.Cfdi33.c_RegimenFiscal.Item605, //Sueldos y Salarios e Ingresos Asimilados a Salarios
+                    RegimenFiscalReceptor = Modelos.Cfdi33.c_RegimenFiscal.Item605, //Sueldos y Salarios e Ingresos Asimilados a Salarios
                     UsoCFDI = c_UsoCFDI.CN01 //Nomina
 
                 };

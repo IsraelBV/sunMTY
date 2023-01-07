@@ -65,7 +65,7 @@ namespace Nomina.Procesador.Metodos
 
             XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
             //ns.Add("xxa", "http://www.w3.org/2001/XMLSchema-instance");
-            ns.Add("la", "http://www.sat.gob.mx/cfd/3/nomi");
+            ns.Add("la", "http://www.sat.gob.mx/cfd/4/nomi");
 
 
             string result = "";
@@ -94,7 +94,7 @@ namespace Nomina.Procesador.Metodos
         {
             //Prefix NameSpaces - cfdi
             XmlSerializerNamespaces nsCfdi = new XmlSerializerNamespaces();
-            nsCfdi.Add("cfdi", "http://www.sat.gob.mx/cfd/3");
+            nsCfdi.Add("cfdi", "http://www.sat.gob.mx/cfd/4");
             nsCfdi.Add("xsi", "http://www.w3.org/2001/XMLSchema-instance");
            
 
@@ -226,7 +226,7 @@ namespace Nomina.Procesador.Metodos
             //Prefix NameSpaces - cfdi
             XmlSerializerNamespaces nsCfdi = new XmlSerializerNamespaces();
             
-            nsCfdi.Add("cfdi", "http://www.sat.gob.mx/cfd/3");
+            nsCfdi.Add("cfdi", "http://www.sat.gob.mx/cfd/4");
             nsCfdi.Add("nomina12", "http://www.sat.gob.mx/nomina12");
             nsCfdi.Add("xsi", "http://www.w3.org/2001/XMLSchema-instance");
 

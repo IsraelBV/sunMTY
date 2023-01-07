@@ -559,7 +559,7 @@ namespace Nomina.Procesador
 
 
                 comprobante33.LugarExpedicion = emisorDatos.CP; //codigo postal del cat del sat  [0-9]{5}
-                comprobante33.schemaLocation = "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/nomina12 http://www.sat.gob.mx/sitio_internet/cfd/nomina/nomina12.xsd ";
+                comprobante33.schemaLocation = "http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd http://www.sat.gob.mx/nomina12 http://www.sat.gob.mx/sitio_internet/cfd/nomina/nomina12.xsd ";
                 //comprobante33.Confirmacion = "";
 
                 comprobante33.SubTotal = subtotal;

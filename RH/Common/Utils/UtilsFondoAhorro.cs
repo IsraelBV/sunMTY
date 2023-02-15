@@ -105,6 +105,8 @@ namespace Common.Utils
                     return "INBURSA";
                 case 8:
                     return "BANREGIO";
+                case 9:
+                    return "INVERLAT";
                 default:
                     return null;
             }

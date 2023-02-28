@@ -5655,7 +5655,7 @@ namespace Nomina.Procesador
                         foreach (DataRow renglon in dataSet.Tables["Comprobante"].Rows)
                         {
                             totalComprobante = Convert.ToString(renglon["total"]);
-                            formaDePago = Convert.ToString(renglon["formaPago"]);
+                            //formaDePago = Convert.ToString(renglon["formaPago"]);
                             metodoPago = Convert.ToString(renglon["metodoPago"]);
                             numCertificadoEmisor = conTimbrado ? Convert.ToString(renglon["noCertificado"]) : "--";
                             moneda = Convert.ToString(renglon["moneda"]);
@@ -5860,7 +5860,7 @@ namespace Nomina.Procesador
 
 
 
-                tablaEmisor.AddCell(new PdfPCell(new Phrase("3.3", _font8W))
+                tablaEmisor.AddCell(new PdfPCell(new Phrase("4.0", _font8W))
                 {
 
                     BackgroundColor = colorBackAzulClaro,
@@ -6498,7 +6498,7 @@ namespace Nomina.Procesador
                 tbldatos.AddCell(new PdfPCell(new Phrase("Fecha y Hora de certificación:", _font7B)) { Border = 0, HorizontalAlignment = 2 });
 
                 tbldatos.AddCell(new PdfPCell(new Phrase("Método de pago:", _font7B)) { Border = 0, HorizontalAlignment = 2 });
-                tbldatos.AddCell(new PdfPCell(new Phrase("Forma de pago:", _font7B)) { Border = 0, HorizontalAlignment = 2 });
+                //tbldatos.AddCell(new PdfPCell(new Phrase("Forma de pago:", _font7B)) { Border = 0, HorizontalAlignment = 2 });
                 tbldatos.AddCell(new PdfPCell(new Phrase("Moneda:", _font7B)) { Border = 0, HorizontalAlignment = 2 });
                 tbldatos.AddCell(new PdfPCell(new Phrase("Uso CFDI:", _font7B)) { Border = 0, HorizontalAlignment = 2 });
 
@@ -6535,11 +6535,11 @@ namespace Nomina.Procesador
                     HorizontalAlignment = 0
                 });
 
-                tblcontenido.AddCell(new PdfPCell(new Phrase($"{formaDePago} Por definir", _font7))
-                {
-                    Border = 0,
-                    HorizontalAlignment = 0
-                });
+                //tblcontenido.AddCell(new PdfPCell(new Phrase($"{formaDePago} Por definir", _font7))
+                //{
+                //    Border = 0,
+                //    HorizontalAlignment = 0
+                //});
 
 
                 tblcontenido.AddCell(new PdfPCell(new Phrase(moneda, _font7))

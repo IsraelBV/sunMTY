@@ -1455,6 +1455,20 @@ namespace Nomina.Procesador.Datos
             }
         }
 
+        public List<NOM_Finiquito_Descuento_Adicional> GetComisionesAdicionalesFiniquito(int idPeriodo)
+        {
+            using (var context = new RHEntities())
+            {
+                var listaComision = context.NOM_Finiquito_Descuento_Adicional.Where(x => x.IdPeriodo == idPeriodo && x.TipoConcepto == 1 && x.IsComplemento == false).ToList();
+
+                return listaComision;
+
+                //var item2 = listaDescuento == null ? 0 : listaDescuento.Sum(x => x.TotalDescuento);
+
+                // return (double)item2;
+            }
+        }
+
         public List<NOM_Finiquito_Detalle> GetDescuentoPorSueldoPendiente(int idFiniquito)
         {
             using (var context = new RHEntities())

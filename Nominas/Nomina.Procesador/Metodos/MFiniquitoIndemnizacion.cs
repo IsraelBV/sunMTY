@@ -432,7 +432,18 @@ namespace Nomina.Procesador.Metodos
                 #endregion
 
                 #region PERCEPCIONES ADICIONALES FISCALES
-                //no estara disponible por el momentos : Alondra y Gordolfo dijero que solo complemento
+                //no estara disponible por el momentos : Alondra y Rordolfo dijero que solo complemento
+
+                //PERSEPCIONES ADICIONALES 
+
+                var listaComisionesFiscalesAdicionales = _NominasDao.GetComisionesAdicionalesFiniquito(idPeriodo);
+
+
+                //Se suma el total descuento por fiscal
+                var comisionF = listaComisionesFiscalesAdicionales.Sum(x => x.TotalDescuento);
+                decimal totalComisionAdicionalFiscal = 0;
+                totalComisionAdicionalFiscal = comisionF <= 0 ? 0 : comisionF;
+
                 #endregion
 
                 #region PERCEPCIONES ADICIONALES COMPLEMENTO - COMISIONES
@@ -967,6 +978,9 @@ namespace Nomina.Procesador.Metodos
                        _PRIMA_ANTIGUEDAD + _VACACIONES_PENDIENTES + _PRIMA_VACACIONAL_PENDIENTE +
                        _20_DIAS_POR_AÑO);
 
+                //se suman las percepciones extras agregadas como fondo de ahorro
+                TOTAL_FISCAL += totalComisionAdicionalFiscal;
+
                 //Se suma la gratificacion al total del finiquito
                 TOTAL_FISCAL += GRATIFICACION;
                 TOTAL_FISCAL += COMPENSACIONxINDEMNIZACION;
@@ -1009,6 +1023,7 @@ namespace Nomina.Procesador.Metodos
                                           GratificacionGravada;
 
                 totalExcentoFiniquito = PrimaVacacionalExcento + AguinaldoExcento + PrimaVacacionalPendienteExcento;
+                totalExcentoFiniquito += totalComisionAdicionalFiscal;
 
                 #endregion
 
@@ -1017,6 +1032,10 @@ namespace Nomina.Procesador.Metodos
                 // subTotal de Finiquito Fiscal-Complemento
                 decimal subTotalFiniquito = _SUELDO + _VACACIONES + _PRIMA_VACACIONAL + _AGUINALDO + _VACACIONES_PENDIENTES +
                                            _PRIMA_VACACIONAL_PENDIENTE + GRATIFICACION;
+
+                //se suman las percepciones extras agregadas como fondo de ahorro
+                subTotalFiniquito += totalComisionAdicionalFiscal;
+
 
                 //suma cuando sea liquidacion
                 if (calcularLiquidacion)
@@ -1264,7 +1283,7 @@ namespace Nomina.Procesador.Metodos
                 //##############################################################
                 // (SM * 90) x (años de servicio) 
 
-                decimal multiplodeNoventa = arrayF.MesesSalarioF < 0 ? 90 : arrayF.MesesSalarioF;
+                decimal multiplodeNoventa = arrayF.MesesSalarioF <= 0 ? 90 : arrayF.MesesSalarioF;
 
                 //double proporcion_exentaLiquidacion = (salarioMinimo * 90)* añosAntiguedad;
                 decimal proporcion_exentaLiquidacion = Utils.TruncateDecimales((salarioMinimo * multiplodeNoventa) * añosAntiguedad); //antiguedadLaboral
@@ -1369,6 +1388,7 @@ namespace Nomina.Procesador.Metodos
                 #region GUARDAR RESULTADOS
 
                 totalPercepciones = (_SUELDO + _VACACIONES + _PRIMA_VACACIONAL + _AGUINALDO + _VACACIONES_PENDIENTES + _PRIMA_VACACIONAL_PENDIENTE + GRATIFICACION);
+                totalPercepciones += totalComisionAdicionalFiscal;
 
                 //Guardar Finiquito -> ACTUALIZAR EL FINIQUITO
                 #region Finiquito Fiscal
@@ -1732,6 +1752,27 @@ namespace Nomina.Procesador.Metodos
                             Total = itemDescuento.TotalDescuento,
                             GravadoISR = 0,
                             ExentoISR = itemDescuento.TotalDescuento,
+                            IdPrestamo = 0,
+                            Liq = false
+                        };
+
+                        listaDetalleFiniquito.Add(itemDescDetalle);
+                    }
+                }
+
+                //AGREGA LOS CONCEPTO DE COMISIONES ADICIONALES
+                if (listaDescuentoFiscales != null)
+                {
+                    foreach (var itemComision in listaComisionesFiscalesAdicionales)
+                    {
+                        var itemDescDetalle = new NOM_Finiquito_Detalle()
+                        {
+                            Id = 0,
+                            IdFiniquito = itemFiniquito.IdFiniquito,
+                            IdConcepto = itemComision.IdConcepto,
+                            Total = itemComision.TotalDescuento,
+                            GravadoISR = 0,
+                            ExentoISR = itemComision.TotalDescuento,
                             IdPrestamo = 0,
                             Liq = false
                         };

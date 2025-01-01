@@ -184,7 +184,7 @@ namespace Nomina.Procesador.Metodos
             fechaUltimoDia = periodoPago.Fecha_Fin;
 
             if (itemZonaSalario != null)
-                sm = itemZonaSalario.SMG;
+                sm = itemZonaSalario.UMA;// se calcula con el UMA, antes se calculaba con SM 06-12-2023
 
 
             diasEjercicio = Utils.GetDiasDelAño(fechaUltimoDia);
@@ -269,6 +269,8 @@ namespace Nomina.Procesador.Metodos
 
                 if (itemFactorIntegracion != null)
                     diasAguinaldo = itemFactorIntegracion.DiasAguinaldo;
+                    diasAguinaldo = 30;// itemFactorIntegracion.DiasAguinaldo;
+
 
                 //FALTAS
                 faltas = 0;

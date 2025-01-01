@@ -616,7 +616,8 @@ namespace Nomina.Reportes
                 cadenaLinea += "E,";//T_TRAB //Se usa la "E" como se recomendo por Odesa ya que en el catalogo significa empleado
                 cadenaLinea += "0,";//R_PAGO
                 cadenaLinea += "\""+UtilsFondoAhorro.claveBanco(itemDatoBancario.IdBanco) + "\",";//BANCO
-                var cuentaoclabe = (itemDatoBancario.IdBanco == 2)? itemDatoBancario.CuentaBancaria : itemDatoBancario.Clabe;
+                var cuentaoclabe = itemDatoBancario.Clabe;//se cambia opr peticion de cliente a que siempre sea clabe aun que sea banorte el banco 12-07-2024
+                //var cuentaoclabe = (itemDatoBancario.IdBanco == 2)? itemDatoBancario.CuentaBancaria : itemDatoBancario.Clabe;//se cambia opr peticion de cliente a que siempre sea clabe aun que sea banorte el banco 12-07-2024
                 //var cuentaoclabe = (Int32.Parse(itemDatoBancario.CuentaBancaria) != 0)? itemDatoBancario.CuentaBancaria : itemDatoBancario.Clabe;
                 cadenaLinea += cuentaoclabe + ",";//CUENTA_B
                 var sueldoMensual = Math.Round((con.SD * 30.4M),2);

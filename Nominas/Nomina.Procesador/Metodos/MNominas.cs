@@ -90,7 +90,7 @@ namespace Nomina.Procesador.Metodos
 
             if (tipoNomina == 16) //Asimilado
             {
-                objCalculoSubsidio = CalculoIsrAsimilado(salarioBase, nomina.SD, diasPeriodo, 4);//5 tarifa mensual// se cambio a 4 por peticion de rodolfo y sergio
+                objCalculoSubsidio = CalculoIsrAsimilado(salarioBase, nomina.SD, diasPeriodo, 5);//5 tarifa mensual// se cambio a 4 por peticion de rodolfo y sergio
             }
             else
             {
@@ -495,7 +495,7 @@ namespace Nomina.Procesador.Metodos
             decimal cuotaFija = tablaIsr.Cuota_Fija;
 
             //6 Sumar 4) + 5) = ISR
-            decimal isr = resultado + cuotaFija;
+            decimal isr = Math.Round(resultado + cuotaFija,2);
 
             // 7) buscar en la tabla de subsidio en que rango esta el Salario Gravable
             decimal subsidioAlEmpleo = 0; // tablaSubsidio.Subsidio;

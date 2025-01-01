@@ -105,8 +105,15 @@ namespace Common.Utils
                     return "INBURSA";
                 case 8:
                     return "BANREGIO";
+<<<<<<< Updated upstream
+=======
+                case 9:
+                    return "INVERLAT";
+                case 10:
+                    return "AFIRME";
+>>>>>>> Stashed changes
                 default:
-                    return null;
+                    return "sin banco";
             }
         }
 
